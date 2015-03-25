@@ -36,8 +36,9 @@
     font-family: "Fira Mono";
     text-shadow: 0 0 25px rgba($brand-black ,0.8);
     text-align: center;
+    margin-top: 2em;
     @include media($large-screen) {
-      margin-top: 1em;
+      margin-top: 3em;
     }
   }
 
