@@ -182,7 +182,6 @@ app.factory('Styles', [ '$http', 'Filters', function($http, Filters){
     fetchStyles: function(){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
-        console.log(styles);
       });
     },
     list: function(){
