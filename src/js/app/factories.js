@@ -376,6 +376,7 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
                                                     style_id: Filters.getFilters().style
+                                                    brand_id: Filters.getFilters().brand
                                                   }, 
                                                   sort: Filters.getFilters().sort, 
                                                   search_string: Filters.getFilters().searchString
@@ -404,9 +405,13 @@ app.factory('Brands', ['$http', function($http){
   o.brands = [];
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
-      o.brands = _.groupBy(data, function(br){
-        return br.name[0].toLowerCase();
-      });
+      o.brands = data;
+    });
+  }
+
+  o.formattedList = function(){
+    return _.groupBy(o.brands, function(br){
+      return br.name[0].toLowerCase();
     });
   }
 
