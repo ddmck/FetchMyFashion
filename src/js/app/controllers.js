@@ -261,6 +261,23 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
+app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', function($scope, Filters, Products, Brands){
+  $scope.brands = Brands;
+  $scope.brands.fetchBrands();
+  $scope.filters = Filters;
+
+  $scope.setBrand = function(cat_id){
+    if (cat_id === "") {
+      Filters.removeFilter("brand");
+    } else {
+      Filters.setFilter("brand", parseInt(cat_id));
+    }
+    Products.resetProducts();
+    Products.resetPage();
+    Products.fetchProducts();
+  };
+}]);
+
 app.controller('MobileCatController', ['$scope', 'Categories', function($scope, Categories){
   Categories.fetchCategories();
   $scope.categories = Categories;
