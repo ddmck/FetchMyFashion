@@ -54,5 +54,14 @@
         </option>
       </select>
     </div>
+    <div class="filter">
+      <label>Brands</label>
+      <select ng-controller="BrandDropdownController" ng-model="brandId" ng-change="setBrand(brandId)">
+        <option value="">All</option>
+        <option ng-repeat="brand in brands.list() | orderBy:'name'" value={{brand.id}} >
+          {{brand["name"]}}
+        </option>
+      </select>
+    </div>
   </div>
 </section>
