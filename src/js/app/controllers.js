@@ -495,6 +495,10 @@ app.controller("BrandController", ["Meta", "$scope", "$http", "$stateParams", "P
                                        return _.contains(n.name, $scope.category)
                                        });
   };
+
+  $scope.onCatPage = function(){
+    return !!$scope.category;
+  }
 }]);
 
 

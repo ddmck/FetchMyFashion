@@ -1388,6 +1388,20 @@ section.row {
       @media screen and (min-width: 53.75em) {
         .title section.row h1 {
           font-size: 2.25em; } }
+    .title section.row .table {
+      display: table;
+      /* Allow the centering to work */
+      margin: 1em auto 0 auto; }
+      .title section.row .table ul.featured-categories li {
+        display: inline;
+        padding-right: 1em;
+        text-transform: capitalize; }
+        .title section.row .table ul.featured-categories li:last-child {
+          padding-right: 0; }
+        .title section.row .table ul.featured-categories li a {
+          color: #e7e7e7; }
+          .title section.row .table ul.featured-categories li a:hover {
+            color: #b4b4b4; }
 
 .side-image {
   margin-bottom: -2em; }
