@@ -13,7 +13,7 @@
       <label>Categories</label>
       <select ng-controller="CategoryController" ng-model="catId" ng-change="setCategory(catId)">
         <option value="">All</option>
-        <option ng-repeat="category in categories.list() | orderBy:'name'" value={{category.id}} ng-selected="filters.getFilters().category === category.id">
+        <option ng-repeat="category in categories.list() | orderBy:'name'" value={{category.id}} ng-selected="filters.getFilters().category == category.id">
           {{category.name}}
         </option>
       </select>

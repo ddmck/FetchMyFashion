@@ -471,17 +471,30 @@ app.controller("HeadController", ["Meta", "$scope", function(Meta, $scope){
   $scope.meta = Meta;
 }]);
 
-app.controller("BrandController", ["Meta", "$scope", "$http", "$stateParams", "Products", "Filters", function(Meta, $scope, $http, $stateParams, Products, Filters){
+app.controller("BrandController", ["Meta", "$scope", "$http", "$stateParams", "Products", "Filters", "$state", function(Meta, $scope, $http, $stateParams, Products, Filters, $state){
   Products.resetProducts();
   Products.resetPage();
   Filters.resetAll();
   Filters.setFilter('brand', $stateParams.id);
+  $scope.category = $stateParams.category;
+  Filters.setFilter('category', $stateParams.catID);
   Products.fetchProducts()
   $http.get(backendUrl + 'brands/' + $stateParams.brandId + '.json', {async: true}).success(function(data){
     $scope.brand = data;
+    $scope.checkIfFeaturedCategorySet($scope);
     Meta.set("title", $scope.brand.name + " at Fetch My Fashion");
-    Meta.set("description", "Shop " + $scope.brand.name + " at Fetch My Fashion, All Your Favourite Stores In One Place");
+    if ($stateParams.catID){
+      Meta.set("description", "Shop " + $scope.brand.name + " " + $scope.category + " at Fetch My Fashion, All Your Favourite Stores In One Place");
+    }else{
+      Meta.set("description", "Shop " + $scope.brand.name + " at Fetch My Fashion, All Your Favourite Stores In One Place");
+    }
   })
+
+  $scope.checkIfFeaturedCategorySet = function($scope){
+    $scope.brand.featured_categories = _.reject($scope.brand.featured_categories, function(n) {
+                                       return _.contains(n.name, $scope.category)
+                                       });
+  };
 }]);
 
 
