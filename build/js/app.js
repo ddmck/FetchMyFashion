@@ -1,4 +1,4 @@
-var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid']);
+var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
 var backendUrl = "http://localhost:3000/";
 var assetsUrl = 'http://localhost:9000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
@@ -984,7 +984,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
           data.selectedSize = _.find(data.sizes, function(size){
             return size.id === item.sizeId
           });
-          products.push(data);        
+          products.push(data); 
         });
       });
     },
@@ -1079,6 +1079,8 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
                                                     style_id: Filters.getFilters().style
+                                                    brand_id: Filters.getFilters().brand
+
                                                   }, 
                                                   sort: Filters.getFilters().sort, 
                                                   search_string: Filters.getFilters().searchString
@@ -1102,14 +1104,19 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
-app.factory('Brands', ['$http', function($http){
+app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
-      o.brands = _.groupBy(data, function(br){
-        return br.name[0].toLowerCase();
-      });
+      o.brands = data;
+      $rootScope.$broadcast('brandsLoaded');       
+    });
+  }
+
+  o.formattedList = function(){
+    return _.groupBy(o.brands, function(br){
+      return br.name[0].toLowerCase();
     });
   }
 
@@ -1401,6 +1408,34 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
     Products.resetPage();
     Products.fetchProducts();
   };
+}]);
+
+app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
+  Brands.fetchBrands();
+  $scope.myOptions = Brands.brands;
+  
+  $scope.$on("brandsLoaded", function(){
+    $scope.myOptions = Brands.brands;
+  });
+  
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name'
+    };
+
+  $scope.setBrand = function(cat_id){
+    if (cat_id === "") {
+      Filters.removeFilter("brand");
+    } else {
+      Filters.setFilter("brand", parseInt(cat_id));
+    }
+    Products.resetProducts();
+    Products.resetPage();
+    Products.fetchProducts();
+  }; 
 }]);
 
 app.controller('MobileCatController', ['$scope', 'Categories', function($scope, Categories){
