@@ -281,7 +281,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
           data.selectedSize = _.find(data.sizes, function(size){
             return size.id === item.sizeId
           });
-          products.push(data);        
+          products.push(data); 
         });
       });
     },
@@ -400,12 +400,13 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
-app.factory('Brands', ['$http', function($http){
+app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
+      $rootScope.$broadcast('brandsLoaded');       
     });
   }
 
