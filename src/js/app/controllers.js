@@ -263,10 +263,10 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
 
 app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
   Brands.fetchBrands();
-  $scope.myOptions = Brands.brands;
+  $scope.myOptions = [{id: 0, name: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
-    $scope.myOptions = Brands.brands;
+    $scope.myOptions = [{id: 0, name: "All"}].concat(Brands.brands)
   });
   
   $scope.myConfig = {
@@ -274,14 +274,16 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
       valueField: 'id',
       labelField: 'name',
       maxItems: 1,
-      searchField: 'name'
+      searchField: 'name',
+      allowEmptyOption: true
     };
 
-  $scope.setBrand = function(cat_id){
-    if (cat_id === "") {
+  $scope.setBrand = function(brand_id){
+    console.log(brand_id);
+    if (brand_id === undefined || brand_id == 0) {
       Filters.removeFilter("brand");
     } else {
-      Filters.setFilter("brand", parseInt(cat_id));
+      Filters.setFilter("brand", parseInt(brand_id));
     }
     Products.resetProducts();
     Products.resetPage();
