@@ -36,14 +36,9 @@
         </option>
       </select>
     </div>
-    <div class="filter">
-      <label>Colors</label>
-      <select ng-controller="ColorController" ng-model="colorId" ng-change="setColor(colorId)">
-        <option value="">All</option>
-        <option ng-repeat="color in colors.list() | orderBy:'name'" value={{color.id}} ng-selected="filters.getFilters().color === color.id">
-          {{color.name}}
-        </option>
-      </select>
+    <div class="filter" ng-controller="ColorController">
+      <label>Colours</label>
+      <selectize placeholder="Select a Colour" ng-model="colorId" ng-change="setColor(colorId)" options='myOptions' config='myConfig'></selectize>
     </div>
     <div class="filter">
       <label>Materials</label>
@@ -55,6 +50,7 @@
       </select>
     </div>
     <div class="filter" ng-controller="BrandDropdownController">
+      <label>Brands</label>
       <selectize placeholder='Select a brand...' ng-model="brandId" ng-change="setBrand(brandId)" options='myOptions' config='myConfig'></selectize>
     </div>
   </div>

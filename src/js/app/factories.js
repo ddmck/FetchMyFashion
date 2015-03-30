@@ -37,7 +37,7 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 }]);
 
 
-app.factory('Categories', [ '$http', function($http){
+app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   return {
     fetchCategories: function(){
@@ -52,12 +52,13 @@ app.factory('Categories', [ '$http', function($http){
   }
 }]);
 
-app.factory('Colors', [ '$http', function($http){
+app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
   return {
     fetchColors: function(){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
+        $rootScope.$broadcast('colorsLoaded');
       });
     },
     list: function(){

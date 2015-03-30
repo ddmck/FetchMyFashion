@@ -224,36 +224,27 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
 }]);
 
 app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
-  
-  $scope.colors = [];
   Colors.fetchColors();
-  $scope.colors = Colors;
-  $scope.filters = Filters;
+  $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
+  $scope.$on("colorsLoaded", function(){
+    $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
+    console.log(Colors.list());
+  });
+  
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name',
+      allowEmptyOption: true
+    };
+
   $scope.setColor = function(color_id){
-    if (color_id === "") {
+    if (color_id === undefined || color_id == 0) {
       Filters.removeFilter("color");
     } else {
       Filters.setFilter("color", parseInt(color_id));
-      ga('send', 'event', 'filters', 'selectColor', color_id);
-    }
-    Products.resetProducts();
-    Products.resetPage();
-    Products.fetchProducts();
-  };
-}]);
-
-app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', function($scope, Filters, Products, Materials){
-  
-  $scope.materials = [];
-  Materials.fetchMaterials();
-  $scope.materials = Materials;
-  $scope.filters = Filters;
-  $scope.setMaterial = function(mtrl_id){
-    if (mtrl_id === "") {
-      Filters.removeFilter("material");
-    } else {
-      Filters.setFilter("material", parseInt(mtrl_id));
-      ga('send', 'event', 'filters', 'selectMaterial', mtrl_id);
     }
     Products.resetProducts();
     Products.resetPage();
@@ -279,7 +270,6 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
     };
 
   $scope.setBrand = function(brand_id){
-    console.log(brand_id);
     if (brand_id === undefined || brand_id == 0) {
       Filters.removeFilter("brand");
     } else {
