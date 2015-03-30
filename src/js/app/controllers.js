@@ -261,10 +261,21 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
-app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', function($scope, Filters, Products, Brands){
-  $scope.brands = Brands;
-  $scope.brands.fetchBrands();
-  $scope.filters = Filters;
+app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
+  Brands.fetchBrands();
+  $scope.myOptions = Brands.brands;
+  
+  $scope.$on("brandsLoaded", function(){
+    $scope.myOptions = Brands.brands;
+  });
+  
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name'
+    };
 
   $scope.setBrand = function(cat_id){
     if (cat_id === "") {
@@ -275,7 +286,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
     Products.resetProducts();
     Products.resetPage();
     Products.fetchProducts();
-  };
+  }; 
 }]);
 
 app.controller('MobileCatController', ['$scope', 'Categories', function($scope, Categories){
