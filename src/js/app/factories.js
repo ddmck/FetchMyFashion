@@ -43,6 +43,7 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
     fetchCategories: function(){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
+        $rootScope.$broadcast('catsLoaded');
       });
     },
     list: function(){
@@ -158,12 +159,13 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
 }])
 
 
-app.factory('SubCategories', [ '$http', 'Filters', function($http, Filters){
+app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var subCategories = [];
   return {
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
+        $rootScope.$broadcast('SubCatsLoaded'); 
       });
     },
     list: function(){

@@ -1,31 +1,24 @@
 <section class="row no-top-margin">
   <div class="search-tools">
-    <div class="filter">
+    <div class="filter" ng-controller="GenderController">
       <label>Gender</label>
-      <select ng-controller="GenderController" ng-model="genderId" ng-change="setGender(genderId)" >
-        <option value="">All</option>
-        <option value="1" ng-selected="genderId == 1">Mens</option>
-        <option value="2" ng-selected="genderId == 2">Womens</option>
-      </select> 
-    </li>
+      <selectize placeholder='Select a Gender...' ng-model="genderId" ng-change="setGender(genderId)" options='myOptions' config='myConfig'></selectize>
     </div>
-    <div class="filter">
+    <div class="filter" ng-controller="CategoryController">
       <label>Categories</label>
-      <select ng-controller="CategoryController" ng-model="catId" ng-change="setCategory(catId)">
-        <option value="">All</option>
-        <option ng-repeat="category in categories.list() | orderBy:'name'" value={{category.id}} ng-selected="filters.getFilters().category == category.id">
-          {{category.name}}
-        </option>
-      </select>
+      <selectize placeholder='Select a Category...' ng-model="catId" ng-change="setCategory(catId)" options='myOptions' config='myConfig'></selectize>
     </div>
-    <div class="filter" ng-controller="StylesController" >
-      <label ng-show="filters.getFilters().category && styles.availableList().length > 0">Styles</label>
-      <select ng-model="styleId" ng-change="setStyle(styleId)" ng-show="filters.getFilters().category && styles.availableList().length > 0">
-        <option value="">All</option>
-        <option ng-repeat="style in styles.availableList() | orderBy:'name'" value={{style.id}} ng-selected="filters.getFilters().style === style.id">
-          {{ style.name }}
-        </option>
-      </select>
+    <div class="filter" ng-controller="SubCategoryController" ng-show="filters.getFilters().category">
+      <label ng-show="filters.getFilters().category">Sub Categories</label>
+      <selectize ng-show="filters.getFilters().category" placeholder='Select a Sub Category...' ng-model="subCatId" ng-change="setSubCat(subCatId)" options='myOptions' config='myConfig'></selectize> 
+    </div>
+    <div class="filter" ng-controller="ColorController">
+      <label>Colours</label>
+      <selectize placeholder='Select a Colour...' ng-model="colorId" ng-change="setColor(colorId)" options='myOptions' config='myConfig'></selectize>
+    </div>
+    <div class="filter" ng-controller="BrandDropdownController">
+      <label>Brands</label>
+      <selectize placeholder='Select a Brand...' ng-model="brandId" ng-change="setBrand(brandId)" options='myOptions' config='myConfig'></selectize>
     </div>
     <div class="filter" ng-controller="SortController" style="float:right; margin-right: 0em;">
       <label>Sort by</label>
@@ -35,23 +28,6 @@
           {{ sorter.name }}
         </option>
       </select>
-    </div>
-    <div class="filter" ng-controller="ColorController">
-      <label>Colours</label>
-      <selectize placeholder="Select a Colour" ng-model="colorId" ng-change="setColor(colorId)" options='myOptions' config='myConfig'></selectize>
-    </div>
-    <div class="filter">
-      <label>Materials</label>
-      <select ng-controller="MaterialController" ng-model="materialId" ng-change="setMaterial(materialId)">
-        <option value="">All</option>
-        <option ng-repeat="material in materials.list() | orderBy:'name'" value={{material.id}} ng-selected="filters.getFilters().material === material.id">
-          {{material.name}}
-        </option>
-      </select>
-    </div>
-    <div class="filter" ng-controller="BrandDropdownController">
-      <label>Brands</label>
-      <selectize placeholder='Select a brand...' ng-model="brandId" ng-change="setBrand(brandId)" options='myOptions' config='myConfig'></selectize>
     </div>
   </div>
 </section>

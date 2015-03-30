@@ -151,6 +151,16 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
 
 app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStorage', function($scope, Filters, Products, $localStorage){
   $scope.genderId = Filters.getFilters().gender;
+  $scope.myOptions = [{id: 0, name: "All"},{id: 1, name: "Mens"},{id: 2, name: "Womens"}];
+
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name',
+      allowEmptyOption: true
+    };
 
   $scope.setGender = function(gender) {
     if ( gender === "1") {
@@ -158,8 +168,7 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
       ga('send', 'event', 'filters', 'selectGender', 'male');
     } else if ( gender === "2") {
       Filters.setFilter("gender", 2);
-      ga('send', 'event', 'filters', 'selectGender', 'female');
-    } else if ( gender === "" ){
+    } else if ( gender === undefined || gender == 0 ){
       Filters.removeFilter("gender")
     }
     $localStorage.gender = Filters.getFilters().gender
@@ -170,13 +179,23 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
 }]);
 
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', function($scope, Filters, Products, Categories){
-  
-  $scope.categories = [];
   Categories.fetchCategories();
-  $scope.categories = Categories;
-  $scope.filters = Filters;
+  $scope.myOptions = [{id: 0, name: "All"}].concat(Categories.list());
+  $scope.$on("catsLoaded", function(){
+    $scope.myOptions = [{id: 0, name: "All"}].concat(Categories.list());
+  });
+
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name',
+      allowEmptyOption: true
+    };
+
   $scope.setCategory = function(cat_id){
-    if (cat_id === "") {
+    if (cat_id === undefined || cat_id == 0) {
       Filters.removeFilter("category");
     } else {
       Filters.setFilter("category", parseInt(cat_id));
@@ -191,11 +210,23 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
 }]);
 
 app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categories', 'SubCategories', function($scope, Filters, Products, Categories, SubCategories){
-  $scope.subCategories = SubCategories;
-  $scope.subCategories.fetchSubCategories();
-  $scope.filters = Filters;
+  SubCategories.fetchSubCategories();
+  $scope.myOptions = [{id: 0, name: "All"}].concat(SubCategories.list());
+  $scope.$on("subCatsLoaded", function(){
+    $scope.myOptions = [{id: 0, name: "All"}].concat(SubCategories.list());
+  });
+
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name',
+      allowEmptyOption: true
+    };
+
   $scope.setSubCat = function(sub_cat_id){
-    if (sub_cat_id === "") {
+    if (sub_cat_id === undefined || sub_cat_id == 0) {
       Filters.removeFilter("subCategory");
     } else {
       Filters.setFilter("subCategory", parseInt(sub_cat_id));
@@ -228,7 +259,6 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
   $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
     $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
-    console.log(Colors.list());
   });
   
   $scope.myConfig = {
