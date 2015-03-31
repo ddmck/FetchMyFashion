@@ -1,0 +1,9 @@
+<div class="filter" ng-controller="SortController" style="float:right; margin-right: 0em;">
+  <label>Sort by</label>
+  <select ng-model="sort" ng-change="setSort(sort)">
+    <option value="">Relevance</option>
+    <option ng-repeat="sorter in sorters" value={{sorter.val}}>
+      {{ sorter.name }}
+    </option>
+  </select>
+</div>
