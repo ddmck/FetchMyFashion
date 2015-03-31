@@ -151,7 +151,7 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
 
 app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStorage', function($scope, Filters, Products, $localStorage){
   $scope.genderId = Filters.getFilters().gender;
-  $scope.myOptions = [{id: 0, name: "All"},{id: 1, name: "Mens"},{id: 2, name: "Womens"}];
+  $scope.myGenders = [{id: 0, name: "All"},{id: 1, name: "Mens"},{id: 2, name: "Womens"}];
 
   $scope.myConfig = {
       create: false,
@@ -180,9 +180,9 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
 
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', function($scope, Filters, Products, Categories){
   Categories.fetchCategories();
-  $scope.myOptions = [{id: 0, name: "All"}].concat(Categories.list());
+  $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
-    $scope.myOptions = [{id: 0, name: "All"}].concat(Categories.list());
+    $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   });
 
   $scope.myConfig = {
@@ -211,9 +211,9 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
 
 app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categories', 'SubCategories', function($scope, Filters, Products, Categories, SubCategories){
   SubCategories.fetchSubCategories();
-  $scope.myOptions = [{id: 0, name: "All"}].concat(SubCategories.list());
+  $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
   $scope.$on("subCatsLoaded", function(){
-    $scope.myOptions = [{id: 0, name: "All"}].concat(SubCategories.list());
+    $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
   });
 
   $scope.myConfig = {
@@ -256,9 +256,9 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
 
 app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
   Colors.fetchColors();
-  $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
+  $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
-    $scope.myOptions = [{id: 0, name: "All"}].concat(Colors.list());
+    $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
   });
   
   $scope.myConfig = {
@@ -284,10 +284,10 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
 
 app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
   Brands.fetchBrands();
-  $scope.myOptions = [{id: 0, name: "All"}].concat(Brands.brands);
+  $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
-    $scope.myOptions = [{id: 0, name: "All"}].concat(Brands.brands)
+    $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands)
   });
   
   $scope.myConfig = {
