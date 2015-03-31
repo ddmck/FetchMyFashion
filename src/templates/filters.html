@@ -1,33 +1,10 @@
 <section class="row no-top-margin">
   <div class="search-tools">
-    <div class="filter" ng-controller="GenderController">
-      <label>Gender</label>
-      <selectize placeholder='Select a Gender...' ng-model="genderId" ng-change="setGender(genderId)" options='myOptions' config='myConfig'></selectize>
-    </div>
-    <div class="filter" ng-controller="CategoryController">
-      <label>Categories</label>
-      <selectize placeholder='Select a Category...' ng-model="catId" ng-change="setCategory(catId)" options='myOptions' config='myConfig'></selectize>
-    </div>
-    <div class="filter" ng-controller="SubCategoryController" ng-show="filters.getFilters().category">
-      <label ng-show="filters.getFilters().category">Sub Categories</label>
-      <selectize ng-show="filters.getFilters().category" placeholder='Select a Sub Category...' ng-model="subCatId" ng-change="setSubCat(subCatId)" options='myOptions' config='myConfig'></selectize> 
-    </div>
-    <div class="filter" ng-controller="ColorController">
-      <label>Colours</label>
-      <selectize placeholder='Select a Colour...' ng-model="colorId" ng-change="setColor(colorId)" options='myOptions' config='myConfig'></selectize>
-    </div>
-    <div class="filter" ng-controller="BrandDropdownController">
-      <label>Brands</label>
-      <selectize placeholder='Select a Brand...' ng-model="brandId" ng-change="setBrand(brandId)" options='myOptions' config='myConfig'></selectize>
-    </div>
-    <div class="filter" ng-controller="SortController" style="float:right; margin-right: 0em;">
-      <label>Sort by</label>
-      <select ng-model="sort" ng-change="setSort(sort)">
-        <option value="">Relevance</option>
-        <option ng-repeat="sorter in sorters" value={{sorter.val}}>
-          {{ sorter.name }}
-        </option>
-      </select>
-    </div>
+    <div ng-gender-filter></div>
+    <div ng-category-filter></div>
+    <div ng-sub-category-filter></div>
+    <div ng-colors-filter></div>
+    <div ng-brands-filter></div>
+    <div ng-sort-by></div>
   </div>
 </section>
