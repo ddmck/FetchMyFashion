@@ -214,9 +214,9 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
 
 app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categories', 'SubCategories', function($scope, Filters, Products, Categories, SubCategories){
   SubCategories.fetchSubCategories();
-  $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
+  $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.availablelist());
   $scope.$on("subCatsLoaded", function(){
-    $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
+    $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.availablelist());
   });
 
   $scope.subCategories = SubCategories;
@@ -250,7 +250,7 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   });
 
   $scope.styles = Styles;
-  $scope.filters = Filters
+  $scope.filters = Filters;
 
   $scope.myConfig = {
       create: false,
