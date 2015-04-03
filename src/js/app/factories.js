@@ -44,6 +44,7 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
         $rootScope.$broadcast('catsLoaded');
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
@@ -165,7 +166,7 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
-        $rootScope.$broadcast('SubCatsLoaded'); 
+        $rootScope.$broadcast('subCatsLoaded'); 
       });
     },
     list: function(){
@@ -179,12 +180,13 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
   }
 }]);
 
-app.factory('Styles', [ '$http', 'Filters', function($http, Filters){
+app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
   return {
     fetchStyles: function(){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
