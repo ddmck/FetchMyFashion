@@ -378,7 +378,7 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     sub_category_id: Filters.getFilters().subCategory,
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
-                                                    style_id: Filters.getFilters().style
+                                                    style_id: Filters.getFilters().style,
                                                     brand_id: Filters.getFilters().brand
                                                   }, 
                                                   sort: Filters.getFilters().sort, 
