@@ -122,6 +122,15 @@ app.directive('ngSubCategoryFilter', function(){
   }
 });
 
+app.directive('ngStylesFilter', function(){
+  return {
+    restrict: "A",
+    templateUrl: assetsUrl + 'templates/styles-filter.html',
+    replace: true,
+    transclude: true
+  }
+});
+
 app.directive('ngColorsFilter', function(){
   return {
     restrict: "A",
