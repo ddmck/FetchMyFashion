@@ -185,6 +185,8 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   });
 
+  $scope.categories = Categories
+
   $scope.myConfig = {
       create: false,
       valueField: 'id',
@@ -215,6 +217,8 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
   $scope.$on("subCatsLoaded", function(){
     $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
   });
+
+  $scope.subCategories = SubCategories;
 
   $scope.myConfig = {
       create: false,
@@ -260,6 +264,8 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
   $scope.$on("colorsLoaded", function(){
     $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
   });
+
+  $scope.colors = Colors;
   
   $scope.myConfig = {
       create: false,
@@ -289,6 +295,8 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   $scope.$on("brandsLoaded", function(){
     $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands)
   });
+
+  $scope.brands = Brands;
   
   $scope.myConfig = {
       create: false,
@@ -387,26 +395,20 @@ app.controller('PaymentsController', ['$scope', '$auth', '$localStorage', '$stat
     $state.go('pay.address');
   }
 }]);
+
 app.controller('SortController', ['$scope', 'Filters', 'Products', function($scope, Filters, Products){
   $scope.Filters = Filters;
-  $scope.sorters = [
-    {
-      name: "Name A-Z",
-      val: "first_letter, asc"
-    },
-    {
-      name: "Name Z-A",
-      val: "first_letter, desc"
-    },
-    {
-      name: "Price Low-High",
-      val: "display_price, asc"
-    },
-    {
-      name: "Price High-Low",
-      val: "display_price, desc"
-    }
-  ];
+  $scope.mySorts = [{id: 0, name: "Name A-Z", value: "first_letter, asc"},{id: 1, name: "Name Z-A", value: "first_letter, desc"},{id: 2, name: "Price Low-High", value: "display_price, asc"},{id: 2, name: "Price High-Low", value: "display_price, desc"}];
+
+  $scope.myConfig = {
+    create: false,
+    valueField: 'value',
+    labelField: 'name',
+    maxItems: 1,
+    searchField: 'name',
+    allowEmptyOption: true
+  };
+
 
   $scope.setSort = function(sort){
     Filters.setFilter("sort", sort);
