@@ -1,22 +1,33 @@
 app.factory('Filters', ['$location', function($location){
   // Hacky way to prevent location being set to empty string causing refresh
   var filters = {};
-
+  var lastResetFrom;
   return {
     getFilters: function(){
       return filters;
     },
     setFilter: function(name, value){
+      var changed = filters[name] !== value
       filters[name] = value;
+      return changed;
     },
     removeFilter: function(name){
+      var changed = !!filters[name]
       delete filters[name];
+      return changed;
     },
     useQuery: function(query){
       filters = query;
     },
-    resetAll: function(){
-      filters = {gender: filters.gender};
+    resetAll: function(hard){
+      if (hard) {
+        
+        filters = {gender: filters.gender};
+        lastResetFrom = $location.absUrl();
+      } else if (lastResetFrom !== $location.absUrl()) {
+        filters = {gender: filters.gender};
+        lastResetFrom = $location.absUrl();
+      } 
     }         
   };
 }]);
@@ -362,20 +373,15 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     },
     resetProducts: function(hard){
       if (hard) {
-        console.log("hard reset")
         products = [];
         scrollActive = false;
         lastResetFrom = $location.absUrl();
         page = 1
       } else if ($location.absUrl() !== lastResetFrom) {
-        console.log("soft reset becuase going to a different page");
         products = [];
         scrollActive = false;
         lastResetFrom = $location.absUrl();
         page = 1
-      } else {
-        console.log("No need to reset");
-
       }
     },
     resetPage: function(){

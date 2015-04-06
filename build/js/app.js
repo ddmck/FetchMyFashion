@@ -1,5 +1,5 @@
 var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
-var backendUrl = "http://localhost:3000/";
+var backendUrl = "https://www.shopshopgo.com/";
 var assetsUrl = 'http://localhost:9000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
 
@@ -766,22 +766,33 @@ app.directive('ngMetaOgPriceCurrency', function(){
 app.factory('Filters', ['$location', function($location){
   // Hacky way to prevent location being set to empty string causing refresh
   var filters = {};
-
+  var lastResetFrom;
   return {
     getFilters: function(){
       return filters;
     },
     setFilter: function(name, value){
+      var changed = filters[name] !== value
       filters[name] = value;
+      return changed;
     },
     removeFilter: function(name){
+      var changed = !!filters[name]
       delete filters[name];
+      return changed;
     },
     useQuery: function(query){
       filters = query;
     },
-    resetAll: function(){
-      filters = {gender: filters.gender};
+    resetAll: function(hard){
+      if (hard) {
+        
+        filters = {gender: filters.gender};
+        lastResetFrom = $location.absUrl();
+      } else if (lastResetFrom !== $location.absUrl()) {
+        filters = {gender: filters.gender};
+        lastResetFrom = $location.absUrl();
+      } 
     }         
   };
 }]);
@@ -1127,20 +1138,15 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     },
     resetProducts: function(hard){
       if (hard) {
-        console.log("hard reset")
         products = [];
         scrollActive = false;
         lastResetFrom = $location.absUrl();
         page = 1
       } else if ($location.absUrl() !== lastResetFrom) {
-        console.log("soft reset becuase going to a different page");
         products = [];
         scrollActive = false;
         lastResetFrom = $location.absUrl();
         page = 1
-      } else {
-        console.log("No need to reset");
-
       }
     },
     resetPage: function(){
@@ -1394,27 +1400,32 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
     };
 
   $scope.setGender = function(gender) {
+    var changed;
     if ( gender === "1") {
-      Filters.setFilter("gender", 1);
+      changed = Filters.setFilter("gender", 1);
       ga('send', 'event', 'filters', 'selectGender', 'male');
     } else if ( gender === "2") {
-      Filters.setFilter("gender", 2);
+      changed = Filters.setFilter("gender", 2);
     } else if ( gender === undefined || gender == 0 ){
-      Filters.removeFilter("gender")
+      changed = Filters.removeFilter("gender");
     }
     $localStorage.gender = Filters.getFilters().gender
-    Products.resetProducts(true);
-    Products.fetchProducts();
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   };
 }]);
 
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', '$rootScope', function($scope, Filters, Products, Categories, $rootScope){
+  var changed;
   Categories.fetchCategories();
   $scope.catId = Filters.getFilters().category;
   $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
     $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   });
+
 
   $scope.categories = Categories
 
@@ -1429,16 +1440,19 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
 
   $scope.setCategory = function(cat_id){
     if (cat_id === undefined || cat_id == 0) {
-      Filters.removeFilter("category");
+      changed = Filters.removeFilter("category");
     } else {
-      Filters.setFilter("category", parseInt(cat_id));
+      changed = Filters.setFilter("category", parseInt(cat_id));
       ga('send', 'event', 'filters', 'selectCategory', cat_id);
       $rootScope.$broadcast('stylesLoaded');
     }
-    Filters.removeFilter("subCategory");
-    Filters.removeFilter("style");
-    Products.resetProducts(true);
-    Products.fetchProducts();
+    
+    if (changed) {
+      Filters.removeFilter("subCategory");
+      Filters.removeFilter("style");
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   };
 }]);
 
@@ -1472,6 +1486,8 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
 }]);
 
 app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', function($scope, Filters, Products, Categories, Styles){
+  var changed;
+  $scope.styleId = Filters.getFilters().style;
   Styles.fetchStyles();
   $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
   $scope.$on("stylesLoaded", function(){
@@ -1482,27 +1498,31 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   $scope.filters = Filters;
 
   $scope.myConfig = {
-      create: false,
-      valueField: 'id',
-      labelField: 'name',
-      maxItems: 1,
-      searchField: 'name',
-      allowEmptyOption: true
-    };
+    create: false,
+    valueField: 'id',
+    labelField: 'name',
+    maxItems: 1,
+    searchField: 'name',
+    allowEmptyOption: true
+  };
 
   $scope.setStyle = function(style_id){
     if (style_id === undefined || style_id == 0) {
-      Filters.removeFilter("style");
+      changed = Filters.removeFilter("style");
     } else {
-      Filters.setFilter("style", parseInt(style_id));
+      changed = Filters.setFilter("style", parseInt(style_id));
       ga('send', 'event', 'filters', 'selectStyle', style_id);
     }
-    Products.resetProducts(true);
-    Products.fetchProducts();
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   };
 }]);
 
 app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
+  var changed;
+  $scope.colorId = Filters.getFilters().color;
   Colors.fetchColors();
   $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
@@ -1522,16 +1542,21 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
 
   $scope.setColor = function(color_id){
     if (color_id === undefined || color_id == 0) {
-      Filters.removeFilter("color");
+      changed = Filters.removeFilter("color");
     } else {
-      Filters.setFilter("color", parseInt(color_id));
+      changed = Filters.setFilter("color", parseInt(color_id));
     }
-    Products.resetProducts(true);
-    Products.fetchProducts();
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   };
 }]);
 
 app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
+  var changed;
+  $scope.brandId = Filters.getFilters().brand;
+
   Brands.fetchBrands();
   $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
   
@@ -1552,12 +1577,14 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
 
   $scope.setBrand = function(brand_id){
     if (brand_id === undefined || brand_id == 0) {
-      Filters.removeFilter("brand");
+      changed = Filters.removeFilter("brand");
     } else {
-      Filters.setFilter("brand", parseInt(brand_id));
+      changed = Filters.setFilter("brand", parseInt(brand_id));
     }
-    Products.resetProducts(true);
-    Products.fetchProducts();
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   }; 
 }]);
 
@@ -1573,7 +1600,7 @@ app.controller('SearchController', ['$state', 'Filters', 'Products', 'Categories
       return
     } else {
       cat = Filters.getFilters().category;
-      Filters.resetAll();
+      Filters.resetAll(true);
       Filters.setFilter("category", cat);
       Filters.setFilter("searchString", searchString);
       $state.go('search', {searchString: searchString});
@@ -1639,6 +1666,8 @@ app.controller('PaymentsController', ['$scope', '$auth', '$localStorage', '$stat
 }]);
 
 app.controller('SortController', ['$scope', 'Filters', 'Products', function($scope, Filters, Products){
+  var changed;
+  $scope.sort = Filters.getFilters().sort;
   $scope.Filters = Filters;
   $scope.mySorts = [{id: 0, name: "Name A-Z", value: "first_letter, asc"},{id: 1, name: "Name Z-A", value: "first_letter, desc"},{id: 2, name: "Price Low-High", value: "display_price, asc"},{id: 2, name: "Price High-Low", value: "display_price, desc"}];
 
@@ -1653,11 +1682,12 @@ app.controller('SortController', ['$scope', 'Filters', 'Products', function($sco
 
 
   $scope.setSort = function(sort){
-    Filters.setFilter("sort", sort);
+    changed = Filters.setFilter("sort", sort);
     ga('send', 'event', 'filters', 'sort', sort);
-    Products.resetProducts();
-    Products.resetPage();
-    Products.fetchProducts();
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
   };
 }]);
 
