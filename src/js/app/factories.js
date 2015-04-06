@@ -37,12 +37,14 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 }]);
 
 
-app.factory('Categories', [ '$http', function($http){
+app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   return {
     fetchCategories: function(){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
+        $rootScope.$broadcast('catsLoaded');
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
@@ -52,12 +54,13 @@ app.factory('Categories', [ '$http', function($http){
   }
 }]);
 
-app.factory('Colors', [ '$http', function($http){
+app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
   return {
     fetchColors: function(){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
+        $rootScope.$broadcast('colorsLoaded');
       });
     },
     list: function(){
@@ -157,12 +160,13 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
 }])
 
 
-app.factory('SubCategories', [ '$http', 'Filters', function($http, Filters){
+app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var subCategories = [];
   return {
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
+        $rootScope.$broadcast('subCatsLoaded'); 
       });
     },
     list: function(){
@@ -176,12 +180,13 @@ app.factory('SubCategories', [ '$http', 'Filters', function($http, Filters){
   }
 }]);
 
-app.factory('Styles', [ '$http', 'Filters', function($http, Filters){
+app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
   return {
     fetchStyles: function(){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
@@ -281,7 +286,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
           data.selectedSize = _.find(data.sizes, function(size){
             return size.id === item.sizeId
           });
-          products.push(data);        
+          products.push(data); 
         });
       });
     },
@@ -375,7 +380,8 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     sub_category_id: Filters.getFilters().subCategory,
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
-                                                    style_id: Filters.getFilters().style
+                                                    style_id: Filters.getFilters().style,
+                                                    brand_id: Filters.getFilters().brand
                                                   }, 
                                                   sort: Filters.getFilters().sort, 
                                                   search_string: Filters.getFilters().searchString
@@ -399,14 +405,19 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
-app.factory('Brands', ['$http', function($http){
+app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
-      o.brands = _.groupBy(data, function(br){
-        return br.name[0].toLowerCase();
-      });
+      o.brands = data;
+      $rootScope.$broadcast('brandsLoaded');       
+    });
+  }
+
+  o.formattedList = function(){
+    return _.groupBy(o.brands, function(br){
+      return br.name[0].toLowerCase();
     });
   }
 
