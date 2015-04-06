@@ -918,10 +918,12 @@ header.navigation {
     font-family: "Fira Mono";
     text-shadow: 0 0 25px rgba(33, 33, 33, 0.8);
     text-align: center;
-    margin-top: 2em; }
+    margin-top: 2em;
+    display: none; }
     @media screen and (min-width: 53.75em) {
       .hero .inspiration {
-        margin-top: 3em; } }
+        margin-top: 3em;
+        display: block; } }
   .hero .hero-inner {
     max-width: 68em;
     margin-left: auto;
@@ -1075,7 +1077,11 @@ header.navigation {
     opacity: 0; } }
 .welcome-trends {
   background: #272727;
-  margin-bottom: -5em; }
+  margin-bottom: -5em;
+  display: none; }
+  @media screen and (min-width: 53.75em) {
+    .welcome-trends {
+      display: block; } }
   .welcome-trends .welcome-deckgrid {
     position: relative;
     top: -4em;
