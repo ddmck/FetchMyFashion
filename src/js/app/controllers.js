@@ -180,6 +180,7 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
 
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', '$rootScope', function($scope, Filters, Products, Categories, $rootScope){
   Categories.fetchCategories();
+  $scope.catId = Filters.getFilters().category;
   $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
     $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
