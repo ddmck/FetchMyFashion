@@ -522,6 +522,15 @@ app.directive('ngSubCategoryFilter', function(){
   }
 });
 
+app.directive('ngStylesFilter', function(){
+  return {
+    restrict: "A",
+    templateUrl: assetsUrl + 'templates/styles-filter.html',
+    replace: true,
+    transclude: true
+  }
+});
+
 app.directive('ngColorsFilter', function(){
   return {
     restrict: "A",
@@ -801,6 +810,7 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
         $rootScope.$broadcast('catsLoaded');
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
@@ -922,7 +932,7 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
-        $rootScope.$broadcast('SubCatsLoaded'); 
+        $rootScope.$broadcast('subCatsLoaded'); 
       });
     },
     list: function(){
@@ -936,12 +946,13 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
   }
 }]);
 
-app.factory('Styles', [ '$http', 'Filters', function($http, Filters){
+app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
   return {
     fetchStyles: function(){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
+        $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
@@ -1383,7 +1394,7 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
   };
 }]);
 
-app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', function($scope, Filters, Products, Categories){
+app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', '$rootScope', function($scope, Filters, Products, Categories, $rootScope){
   Categories.fetchCategories();
   $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
@@ -1407,6 +1418,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     } else {
       Filters.setFilter("category", parseInt(cat_id));
       ga('send', 'event', 'filters', 'selectCategory', cat_id);
+      $rootScope.$broadcast('stylesLoaded');
     }
     Filters.removeFilter("subCategory");
     Filters.removeFilter("style");
@@ -1418,9 +1430,9 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
 
 app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categories', 'SubCategories', function($scope, Filters, Products, Categories, SubCategories){
   SubCategories.fetchSubCategories();
-  $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
+  $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.availablelist());
   $scope.$on("subCatsLoaded", function(){
-    $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.list());
+    $scope.mySubCats = [{id: 0, name: "All"}].concat(SubCategories.availablelist());
   });
 
   $scope.subCategories = SubCategories;
@@ -1447,11 +1459,26 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
 }]);
 
 app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', function($scope, Filters, Products, Categories, Styles){
+  Styles.fetchStyles();
+  $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+  $scope.$on("stylesLoaded", function(){
+    $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+  });
+
   $scope.styles = Styles;
-  $scope.styles.fetchStyles();
   $scope.filters = Filters;
+
+  $scope.myConfig = {
+      create: false,
+      valueField: 'id',
+      labelField: 'name',
+      maxItems: 1,
+      searchField: 'name',
+      allowEmptyOption: true
+    };
+
   $scope.setStyle = function(style_id){
-    if (style_id === "") {
+    if (style_id === undefined || style_id == 0) {
       Filters.removeFilter("style");
     } else {
       Filters.setFilter("style", parseInt(style_id));
