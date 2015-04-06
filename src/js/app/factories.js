@@ -332,6 +332,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
 }]);
 
 app.factory('Products', ['$http', 'Filters', '$location', function($http, Filters, $location){
+
   var query = $location.search();
   Filters.useQuery(query);
   var factory = this;
@@ -339,6 +340,7 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   var page = 1;
   var searching = true;
   var scrollActive = false;
+  var lastResetFrom;
   return {
     scrollActive: function(){
       return scrollActive;
@@ -358,9 +360,23 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     enumeratePage: function(){
       page += 1;
     },
-    resetProducts: function(){
-      products = [];
-      scrollActive = false;
+    resetProducts: function(hard){
+      if (hard) {
+        console.log("hard reset")
+        products = [];
+        scrollActive = false;
+        lastResetFrom = $location.absUrl();
+        page = 1
+      } else if ($location.absUrl() !== lastResetFrom) {
+        console.log("soft reset becuase going to a different page");
+        products = [];
+        scrollActive = false;
+        lastResetFrom = $location.absUrl();
+        page = 1
+      } else {
+        console.log("No need to reset");
+
+      }
     },
     resetPage: function(){
       page = 1;

@@ -203,7 +203,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/new.html',
       controller: function(Filters, Products){
         Products.resetProducts();
-        Products.resetPage();
+        // Products.resetPage();
         Filters.resetAll();
         Products.fetchProducts();
       }
@@ -257,7 +257,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         }
         $scope.category = $stateParams.category;
         Products.resetProducts();
-        Products.resetPage();
+        // Products.resetPage();
         Filters.resetAll();
         Filters.setFilter('category', $stateParams.catID);
         Filters.setFilter('gender', genderVar);
@@ -303,7 +303,6 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: function($scope, $stateParams, Products){
         $scope.searchString = $stateParams.searchString;
         Products.resetProducts();
-        Products.resetPage();
         Products.fetchProducts();
       }
     })
@@ -1098,6 +1097,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
 }]);
 
 app.factory('Products', ['$http', 'Filters', '$location', function($http, Filters, $location){
+
   var query = $location.search();
   Filters.useQuery(query);
   var factory = this;
@@ -1105,6 +1105,7 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   var page = 1;
   var searching = true;
   var scrollActive = false;
+  var lastResetFrom;
   return {
     scrollActive: function(){
       return scrollActive;
@@ -1124,9 +1125,23 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     enumeratePage: function(){
       page += 1;
     },
-    resetProducts: function(){
-      products = [];
-      scrollActive = false;
+    resetProducts: function(hard){
+      if (hard) {
+        console.log("hard reset")
+        products = [];
+        scrollActive = false;
+        lastResetFrom = $location.absUrl();
+        page = 1
+      } else if ($location.absUrl() !== lastResetFrom) {
+        console.log("soft reset becuase going to a different page");
+        products = [];
+        scrollActive = false;
+        lastResetFrom = $location.absUrl();
+        page = 1
+      } else {
+        console.log("No need to reset");
+
+      }
     },
     resetPage: function(){
       page = 1;
@@ -1290,7 +1305,7 @@ app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', func
 }]);
 
 app.controller('TrendController', ['$http', '$stateParams', '$scope', 'Products', 'Filters', 'Trends', 'Meta', function($http, $stateParams, $scope, Products, Filters, Trends, Meta){
-  Products.resetProducts();
+  Products.resetProducts(true);
   Products.resetPage();
   Filters.resetAll();
   Filters.removeFilter('gender');
@@ -1388,8 +1403,7 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
       Filters.removeFilter("gender")
     }
     $localStorage.gender = Filters.getFilters().gender
-    Products.resetProducts();
-    Products.resetPage()
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -1423,8 +1437,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     }
     Filters.removeFilter("subCategory");
     Filters.removeFilter("style");
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -1453,8 +1466,7 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
     } else {
       Filters.setFilter("subCategory", parseInt(sub_cat_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -1485,8 +1497,7 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
       Filters.setFilter("style", parseInt(style_id));
       ga('send', 'event', 'filters', 'selectStyle', style_id);
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -1515,8 +1526,7 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
     } else {
       Filters.setFilter("color", parseInt(color_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -1546,8 +1556,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
     } else {
       Filters.setFilter("brand", parseInt(brand_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   }; 
 }]);

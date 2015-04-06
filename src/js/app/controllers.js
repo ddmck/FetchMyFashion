@@ -74,7 +74,7 @@ app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', func
 }]);
 
 app.controller('TrendController', ['$http', '$stateParams', '$scope', 'Products', 'Filters', 'Trends', 'Meta', function($http, $stateParams, $scope, Products, Filters, Trends, Meta){
-  Products.resetProducts();
+  Products.resetProducts(true);
   Products.resetPage();
   Filters.resetAll();
   Filters.removeFilter('gender');
@@ -172,8 +172,7 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
       Filters.removeFilter("gender")
     }
     $localStorage.gender = Filters.getFilters().gender
-    Products.resetProducts();
-    Products.resetPage()
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -207,8 +206,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     }
     Filters.removeFilter("subCategory");
     Filters.removeFilter("style");
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -237,8 +235,7 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
     } else {
       Filters.setFilter("subCategory", parseInt(sub_cat_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -269,8 +266,7 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
       Filters.setFilter("style", parseInt(style_id));
       ga('send', 'event', 'filters', 'selectStyle', style_id);
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -299,8 +295,7 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
     } else {
       Filters.setFilter("color", parseInt(color_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   };
 }]);
@@ -330,8 +325,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
     } else {
       Filters.setFilter("brand", parseInt(brand_id));
     }
-    Products.resetProducts();
-    Products.resetPage();
+    Products.resetProducts(true);
     Products.fetchProducts();
   }; 
 }]);
