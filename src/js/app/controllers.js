@@ -179,6 +179,36 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
   };
 }]);
 
+app.controller('UserSettingsController', ['$scope', '$auth', '$http', function ($scope, $auth, $http){
+
+  $scope.generateToken = function(){
+    console.log($auth.user.id)
+
+    $http.post(backendUrl + 'password_resets.json', {userId: $auth.user.id})
+      .success(function(data) {
+        $scope.user.passwordResetToken = data.password_reset_token
+      })
+      .error(function(data) {
+        console.log("Error")
+        console.log(data);
+      });
+  };
+
+  $scope.submitToken = function(token, password){
+    console.log("test");
+    $http.put(backendUrl + 'users/' + $auth.user.id, {reset_token: token, password: password})
+      .success(function(data) {
+        console.log("Error")
+        console.log(data); 
+      })
+      .error(function(data) {
+        console.log("Error")
+        console.log(data);
+      });
+  };
+
+}]);
+
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', '$rootScope', function($scope, Filters, Products, Categories, $rootScope){
   var changed;
   Categories.fetchCategories();
