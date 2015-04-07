@@ -69,6 +69,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'TrendController'
     })
 
+    .state('settings', {
+      url: '/settings',
+      templateUrl: assetsUrl + 'partials/user-settings.html',
+      controller: 'UserSettingsController'
+    })
 
     .state('pay', {
       abstract: true,
