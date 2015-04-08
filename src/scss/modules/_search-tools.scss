@@ -49,11 +49,15 @@
     @include media($large-screen) {
       margin-bottom: 0;
       float: left;
-      margin-right: 2em;
+      margin-right: 1em;
+    }
+
+    &:last-child  label {
+      text-align: right;
     }
 
     .selectize-control {
-      min-width: 120px;
+      min-width: 110px;
 
       .selectize-input {
         padding-right: 2em;

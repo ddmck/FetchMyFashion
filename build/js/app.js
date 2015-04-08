@@ -503,6 +503,15 @@ app.directive('ngGenderFilter', function(){
   }
 });
 
+app.directive('ngMaterialsFilter', function(){
+  return {
+    restrict: "A",
+    templateUrl: assetsUrl + 'templates/materials-filter.html',
+    replace: true,
+    transclude: true
+  }
+});
+
 app.directive('ngCategoryFilter', function(){
   return {
     restrict: "A",
@@ -1192,6 +1201,22 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
+app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
+  var materials = [];
+  return {
+    fetchMaterials: function(){
+      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
+        materials = data;
+        $rootScope.$broadcast('materialsLoaded');
+      });
+    },
+    list: function(){
+      return materials;
+    }
+
+  }
+}]);
+
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];
@@ -1311,13 +1336,12 @@ app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', func
 }]);
 
 app.controller('TrendController', ['$http', '$stateParams', '$scope', 'Products', 'Filters', 'Trends', 'Meta', function($http, $stateParams, $scope, Products, Filters, Trends, Meta){
-  Products.resetProducts(true);
-  Products.resetPage();
+  Products.resetProducts();
   Filters.resetAll();
   Filters.removeFilter('gender');
   $http.get(backendUrl + 'features/' + $stateParams.slug + '.json').success(function(data){
     $scope.trend = data;
-    if ($scope.trend.gender_id) Filters.setFilter("gender", $scope.trend.gender_id);
+    // if ($scope.trend.gender_id) Filters.setFilter("gender", $scope.trend.gender_id);
     if ($scope.trend.brand_id) Filters.setFilter("brand", $scope.trend.brand_id);
     if ($scope.trend.search_string) Filters.setFilter("searchString", $scope.trend.search_string);
     if ($scope.trend.category_id) Filters.setFilter("category", $scope.trend.category_id);
@@ -1694,6 +1718,42 @@ app.controller('SortController', ['$scope', 'Filters', 'Products', function($sco
 app.controller('OrdersController', ['$scope', 'Orders', function($scope, Orders){
   Orders.fetchOrders();
   $scope.orders = Orders;
+}]);
+
+app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', function($scope, Filters, Products, Materials){
+  
+  $scope.materials = [];
+  Materials.fetchMaterials();
+  $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list());
+  $scope.filters = Filters;
+
+  $scope.$on("materialsLoaded", function(){
+    console.log(Materials.list());
+    $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list())
+  });
+
+  $scope.myConfig = {
+    create: false,
+    valueField: 'id',
+    labelField: 'name',
+    maxItems: 1,
+    searchField: 'name',
+    allowEmptyOption: true
+  };
+  
+  $scope.setMaterial = function(mtrl_id){
+    if (mtrl_id === undefined || mtrl_id == 0) {
+      changed = Filters.removeFilter("material");
+    } else {
+      changed = Filters.setFilter("material", parseInt(mtrl_id));
+      ga('send', 'event', 'filters', 'selectMaterial', mtrl_id);
+    }
+    if (changed) {
+      Products.resetProducts(true);
+      Products.fetchProducts();
+    }
+    
+  };
 }]);
 
 app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage){

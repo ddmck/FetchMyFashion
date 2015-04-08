@@ -427,6 +427,22 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
+app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
+  var materials = [];
+  return {
+    fetchMaterials: function(){
+      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
+        materials = data;
+        $rootScope.$broadcast('materialsLoaded');
+      });
+    },
+    list: function(){
+      return materials;
+    }
+
+  }
+}]);
+
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];

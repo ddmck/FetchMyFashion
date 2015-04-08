@@ -104,6 +104,15 @@ app.directive('ngGenderFilter', function(){
   }
 });
 
+app.directive('ngMaterialsFilter', function(){
+  return {
+    restrict: "A",
+    templateUrl: assetsUrl + 'templates/materials-filter.html',
+    replace: true,
+    transclude: true
+  }
+});
+
 app.directive('ngCategoryFilter', function(){
   return {
     restrict: "A",
