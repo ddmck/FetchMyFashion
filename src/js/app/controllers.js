@@ -517,7 +517,23 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     var sizes = _.map($scope.product.sizes, function(size){ return size.name }).join(" | ");
     Meta.set("sizes", sizes);
     $scope.getStoreDetails($scope.product);
+    console.log(_.map($scope.product.sizes, function(n){ return n.name }));
     window.scrollTo(0, 0);
+    console.log($scope.product.deeplink);
+    if ($scope.product.deeplink) {
+      $scope.scraping = true
+
+      $http.get("http://localhost:5000/" + $scope.product.deeplink, {async: true}).success(function(data){
+        console.log(data.sizes);
+        $scope.product.sizes = _.map(data.sizes, function(size) { 
+          return {name: size.name.split(" - ")[0]}; 
+        });
+        console.log($scope.product.sizes);
+        $scope.scraping = false
+      })
+
+    }
+    
   });
 
   $scope.addToWishlist = function(product){
@@ -561,6 +577,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     $scope.size = size;
     $scope.showMenu = false;
     $scope.product.selectedSize = size;
+    console.log($scope.product.selectedSize);
   };
 
   $scope.setButtonMsg = function(inBasket){

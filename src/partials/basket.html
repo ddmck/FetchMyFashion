@@ -13,7 +13,7 @@
       <h1>{{product.name}}</h1>
       <p>{{ product.display_price | currency : '£' }}</p>
       <!-- <p class="comment-detail">{{product.sizes}}</p> -->
-      <p><strong>Size:</strong> {{product.selectedSize.name}}</p>
+      <p><strong>Size:</strong> {{product.selectedSize}}</p>
       <button ng-click="removeFromBasket(product)">Remove</button>
     </div>
   </div>

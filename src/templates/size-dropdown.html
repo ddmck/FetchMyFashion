@@ -1,5 +1,6 @@
 <div class="dropdown">
-  <div class="dropdown-container">
+  <div ng-show="scraping"><h1>Scraping</h1></div>
+  <div class="dropdown-container" ng-hide="scraping">
     <p class="dropdown-description">Size: </p>
     <p class="dropdown-button" ng-click="toggleMenu()">{{size.name || "Click to Select"}}</p>
     <ul class="dropdown-menu dropdown-select" ng-class="{'show-menu': showMenu}" >

@@ -105,6 +105,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.returnTo = "pay.address";
           $state.go("account.signUp");
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -117,6 +120,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.address = addressForm;
           $state.go('pay.billing')
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -138,6 +144,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.clear = function(){
           $localStorage.token = null;
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -157,15 +166,22 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             deliveries: $localStorage.deliveries,
             address: $localStorage.address
           }}).success(function(){
-            $state.go("pay.confirmed")
+            $state.go("pay.confirmed");
+            Basket.reset();
           });
         } 
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
     .state('pay.confirmed', {
       url: "/confirmed",
-      templateUrl: assetsUrl + 'partials/confirmed.html'
+      templateUrl: assetsUrl + 'partials/confirmed.html',
+      onEnter: function(){
+        window.scrollTo(0,0);
+      }
     })
 
     .state('orders', {
@@ -1060,6 +1076,10 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   };
   var products = [];
   return {
+    reset: function(){
+      products = [];
+      $localStorage.basketItems = [];
+    },
     update: function(array) {
       $localStorage.basketItems = array;
     },
@@ -1068,9 +1088,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       _.forEach(basketItems, function(item){
         $http.get(backendUrl + 'products/' + item.productId + '.json').success(function(data){
-          data.selectedSize = _.find(data.sizes, function(size){
-            return size.id === item.sizeId
-          });
+          data.selectedSize = item.sizeName;
           products.push(data); 
         });
       });
@@ -1095,7 +1113,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       var productWithSize = { 
         productId: product.id,
-        sizeId: product.selectedSize.id 
+        sizeName: product.selectedSize.name 
       }
       basketItems.push(productWithSize);
       $localStorage.basketItems = basketItems;
@@ -1779,7 +1797,23 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     var sizes = _.map($scope.product.sizes, function(size){ return size.name }).join(" | ");
     Meta.set("sizes", sizes);
     $scope.getStoreDetails($scope.product);
+    console.log(_.map($scope.product.sizes, function(n){ return n.name }));
     window.scrollTo(0, 0);
+    console.log($scope.product.deeplink);
+    if ($scope.product.deeplink) {
+      $scope.scraping = true
+
+      $http.get("http://localhost:5000/" + $scope.product.deeplink, {async: true}).success(function(data){
+        console.log(data.sizes);
+        $scope.product.sizes = _.map(data.sizes, function(size) { 
+          return {name: size.name.split(" - ")[0]}; 
+        });
+        console.log($scope.product.sizes);
+        $scope.scraping = false
+      })
+
+    }
+    
   });
 
   $scope.addToWishlist = function(product){
@@ -1823,6 +1857,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     $scope.size = size;
     $scope.showMenu = false;
     $scope.product.selectedSize = size;
+    console.log($scope.product.selectedSize);
   };
 
   $scope.setButtonMsg = function(inBasket){
