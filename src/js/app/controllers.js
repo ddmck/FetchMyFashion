@@ -523,7 +523,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     if ($scope.product.deeplink) {
       $scope.scraping = true
 
-      $http.get("http://localhost:5000/" + $scope.product.deeplink, {async: true}).success(function(data){
+      $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
         console.log(data.sizes);
         $scope.product.sizes = _.map(data.sizes, function(size) { 
           return {name: size.name.split(" - ")[0]}; 
