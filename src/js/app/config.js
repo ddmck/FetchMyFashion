@@ -193,6 +193,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserRegistrationsController"
     })
 
+    .state('account.forgottenPassword', {
+      url: '/forgotten-password',
+      templateUrl: assetsUrl + 'partials/forgotten-password.html',
+      controller: "UserRecoveryController"
+    })
+
     .state('products', {
       abstract: true,
       url: '/products',
