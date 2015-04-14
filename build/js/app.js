@@ -1,6 +1,7 @@
 var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
 var backendUrl = "http://localhost:3000/";
 var assetsUrl = 'http://localhost:9000/';
+var scraperUrl = 'http://localhost:5000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
 
 app.config(function($stateProvider, $urlRouterProvider, $authProvider, $locationProvider, $sceDelegateProvider) {
@@ -105,6 +106,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.returnTo = "pay.address";
           $state.go("account.signUp");
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -117,6 +121,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.address = addressForm;
           $state.go('pay.billing')
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -138,6 +145,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.clear = function(){
           $localStorage.token = null;
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -157,15 +167,22 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             deliveries: $localStorage.deliveries,
             address: $localStorage.address
           }}).success(function(){
-            $state.go("pay.confirmed")
+            $state.go("pay.confirmed");
+            Basket.reset();
           });
         } 
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
     .state('pay.confirmed', {
       url: "/confirmed",
-      templateUrl: assetsUrl + 'partials/confirmed.html'
+      templateUrl: assetsUrl + 'partials/confirmed.html',
+      onEnter: function(){
+        window.scrollTo(0,0);
+      }
     })
 
     .state('orders', {
@@ -1060,6 +1077,10 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   };
   var products = [];
   return {
+    reset: function(){
+      products = [];
+      $localStorage.basketItems = [];
+    },
     update: function(array) {
       $localStorage.basketItems = array;
     },
@@ -1068,9 +1089,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       _.forEach(basketItems, function(item){
         $http.get(backendUrl + 'products/' + item.productId + '.json').success(function(data){
-          data.selectedSize = _.find(data.sizes, function(size){
-            return size.id === item.sizeId
-          });
+          data.selectedSize = item.sizeName;
           products.push(data); 
         });
       });
@@ -1095,7 +1114,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       var productWithSize = { 
         productId: product.id,
-        sizeId: product.selectedSize.id 
+        sizeName: product.selectedSize.name 
       }
       basketItems.push(productWithSize);
       $localStorage.basketItems = basketItems;
@@ -1728,7 +1747,6 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   $scope.filters = Filters;
 
   $scope.$on("materialsLoaded", function(){
-    console.log(Materials.list());
     $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list())
   });
 
@@ -1780,6 +1798,18 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     Meta.set("sizes", sizes);
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
+    if ($scope.product.deeplink) {
+      $scope.scraping = true
+
+      $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
+        $scope.product.sizes = _.map(data.sizes, function(size) { 
+          return {name: size.name.split(" - ")[0]}; 
+        });
+        $scope.scraping = false
+      })
+
+    }
+    
   });
 
   $scope.addToWishlist = function(product){

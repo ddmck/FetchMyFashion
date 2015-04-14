@@ -466,7 +466,6 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   $scope.filters = Filters;
 
   $scope.$on("materialsLoaded", function(){
-    console.log(Materials.list());
     $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list())
   });
 
@@ -518,6 +517,18 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     Meta.set("sizes", sizes);
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
+    if ($scope.product.deeplink) {
+      $scope.scraping = true
+
+      $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
+        $scope.product.sizes = _.map(data.sizes, function(size) { 
+          return {name: size.name.split(" - ")[0]}; 
+        });
+        $scope.scraping = false
+      })
+
+    }
+    
   });
 
   $scope.addToWishlist = function(product){

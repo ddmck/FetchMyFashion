@@ -286,6 +286,10 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   };
   var products = [];
   return {
+    reset: function(){
+      products = [];
+      $localStorage.basketItems = [];
+    },
     update: function(array) {
       $localStorage.basketItems = array;
     },
@@ -294,9 +298,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       _.forEach(basketItems, function(item){
         $http.get(backendUrl + 'products/' + item.productId + '.json').success(function(data){
-          data.selectedSize = _.find(data.sizes, function(size){
-            return size.id === item.sizeId
-          });
+          data.selectedSize = item.sizeName;
           products.push(data); 
         });
       });
@@ -321,7 +323,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       var basketItems = $localStorage.basketItems;
       var productWithSize = { 
         productId: product.id,
-        sizeId: product.selectedSize.id 
+        sizeName: product.selectedSize.name 
       }
       basketItems.push(productWithSize);
       $localStorage.basketItems = basketItems;

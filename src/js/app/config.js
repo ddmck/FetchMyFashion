@@ -101,6 +101,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.returnTo = "pay.address";
           $state.go("account.signUp");
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -113,6 +116,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $localStorage.address = addressForm;
           $state.go('pay.billing')
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -134,6 +140,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.clear = function(){
           $localStorage.token = null;
         }
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
@@ -153,15 +162,22 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             deliveries: $localStorage.deliveries,
             address: $localStorage.address
           }}).success(function(){
-            $state.go("pay.confirmed")
+            $state.go("pay.confirmed");
+            Basket.reset();
           });
         } 
+      },
+      onEnter: function(){
+        window.scrollTo(0,0);
       }
     })
 
     .state('pay.confirmed', {
       url: "/confirmed",
-      templateUrl: assetsUrl + 'partials/confirmed.html'
+      templateUrl: assetsUrl + 'partials/confirmed.html',
+      onEnter: function(){
+        window.scrollTo(0,0);
+      }
     })
 
     .state('orders', {
