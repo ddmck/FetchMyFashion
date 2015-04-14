@@ -65,6 +65,21 @@ app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$lo
   };
 }]);
 
+app.controller('UserRecoveryController', ['$state', '$scope', '$auth', function($state, $scope, $auth){
+  $scope.handlePwdResetBtnClick = function() {
+    $auth.requestPasswordReset($scope.pwdResetForm)
+      .then(function(resp) { 
+        console.log("Success");
+        console.log(resp);
+      })
+      .catch(function(resp) { 
+        console.log("Error");
+        console.log(resp.errors);
+        $scope.error = resp.errors;
+      });
+  };
+}]);
+
 app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', function($state, $scope, Trends, Filters){
   $scope.trends = []
   Trends.fetchTrends();
@@ -198,7 +213,7 @@ app.controller('UserSettingsController', ['$scope', '$auth', '$http', function (
     console.log("test");
     $http.put(backendUrl + 'users/' + $auth.user.id, {reset_token: token, password: password})
       .success(function(data) {
-        console.log("Error")
+        console.log("Success")
         console.log(data); 
       })
       .error(function(data) {
