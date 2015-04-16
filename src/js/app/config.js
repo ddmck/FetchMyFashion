@@ -205,6 +205,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserRecoveryController"
     })
 
+    .state('account.delete', {
+      url: '/destroy-account',
+      templateUrl: assetsUrl + 'partials/destroy-account.html',
+      controller: "UserRecoveryController"
+    })
+
     .state('products', {
       abstract: true,
       url: '/products',
