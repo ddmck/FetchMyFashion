@@ -181,6 +181,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/account.html'
     })
 
+    .state('account.passwordReset', {
+      url: '/password-reset?client_id&config&expiry&reset_password&token&uid',
+      templateUrl: assetsUrl + 'partials/password-reset.html',
+      controller: "UserRecoveryController"
+    })
+
     .state('account.signIn', {
       url: '/sign-in',
       templateUrl: assetsUrl + 'partials/sign-in.html',
@@ -385,11 +391,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
   $urlRouterProvider
     .when('/products', 'products/new')
     .when('/account', 'account/sign-in')
-    .when('/pay', 'pay/ypu')
+    .when('/pay', 'pay/you')
     .otherwise('/welcome');
   
   $authProvider.configure({
-      apiUrl: backendUrl + 'api'
+      apiUrl: backendUrl + 'api',
+      passwordResetSuccessUrl: 'http://localhost:8081/account/password-reset'
   });
 
   $locationProvider.html5Mode(true);
