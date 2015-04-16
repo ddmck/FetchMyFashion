@@ -86,6 +86,16 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
         $scope.error = resp.data.errors[0];
       });
   };
+
+  $scope.handleDestroyAccountBtnClick = function() {
+    $auth.destroyAccount()
+      .then(function(resp) {
+        $state.go('welcome')
+      })
+      .catch(function(resp) { 
+        $scope.error = resp.data.errors[0];
+      });
+  };
 }]);
 
 app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', function($state, $scope, Trends, Filters){
