@@ -65,17 +65,25 @@ app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$lo
   };
 }]);
 
-app.controller('UserRecoveryController', ['$state', '$scope', '$auth', function($state, $scope, $auth){
+app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$auth', function($stateParams, $state, $scope, $auth){
   $scope.handlePwdResetBtnClick = function() {
-    $auth.requestPasswordReset($scope.pwdResetForm)
-      .then(function(resp) { 
-        console.log("Success");
-        console.log(resp);
+    $auth.requestPasswordReset($scope.passwordResetForm)
+      .success(function(resp) { 
+        $scope.error = "You'll receive an email with a link shortly"
       })
-      .catch(function(resp) { 
-        console.log("Error");
-        console.log(resp.errors);
-        $scope.error = resp.errors;
+      .error(function(resp) { 
+        $scope.error = resp.errors[0];
+      });
+  };
+
+  $scope.handleUpdatePasswordBtnClick = function() {
+    console.log($stateParams);
+    $auth.updatePassword($scope.changePasswordForm)
+      .then(function(resp) {
+        $scope.error = "Password Updated"
+      })
+      .catch(function(resp) {
+        $scope.error = resp.data.errors[0];
       });
   };
 }]);
@@ -192,36 +200,6 @@ app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStor
       Products.fetchProducts();
     }
   };
-}]);
-
-app.controller('UserSettingsController', ['$scope', '$auth', '$http', function ($scope, $auth, $http){
-
-  $scope.generateToken = function(){
-    console.log($auth.user.id)
-
-    $http.post(backendUrl + 'password_resets.json', {userId: $auth.user.id})
-      .success(function(data) {
-        $scope.user.passwordResetToken = data.password_reset_token
-      })
-      .error(function(data) {
-        console.log("Error")
-        console.log(data);
-      });
-  };
-
-  $scope.submitToken = function(token, password){
-    console.log("test");
-    $http.put(backendUrl + 'users/' + $auth.user.id, {reset_token: token, password: password})
-      .success(function(data) {
-        console.log("Success")
-        console.log(data); 
-      })
-      .error(function(data) {
-        console.log("Error")
-        console.log(data);
-      });
-  };
-
 }]);
 
 app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categories', '$rootScope', function($scope, Filters, Products, Categories, $rootScope){
