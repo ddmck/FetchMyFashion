@@ -193,6 +193,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserSessionsController"
     })
 
+    .state('account.signOut', {
+      url: '/sign-in',
+      templateUrl: assetsUrl + 'partials/sign-out.html',
+      controller: "UserSessionsController"
+    })
+
     .state('account.signUp', {
       url: '/sign-up',
       templateUrl: assetsUrl + 'partials/sign-up.html',
@@ -208,6 +214,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
     .state('account.delete', {
       url: '/destroy-account',
       templateUrl: assetsUrl + 'partials/destroy-account.html',
+      controller: "UserRecoveryController"
+    })
+
+    .state('account.editDetails', {
+      url: '/edit-user-details',
+      templateUrl: assetsUrl + 'partials/edit-user-details.html',
       controller: "UserRecoveryController"
     })
 
