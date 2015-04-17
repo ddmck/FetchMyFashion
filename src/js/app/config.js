@@ -414,7 +414,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
   
   $authProvider.configure({
       apiUrl: backendUrl + 'api',
-      passwordResetSuccessUrl: 'http://localhost:8081/account/password-reset'
+      passwordResetSuccessUrl: window.location.protocol + '//' + window.location.host + '/account/password-reset' 
   });
 
   $locationProvider.html5Mode(true);
