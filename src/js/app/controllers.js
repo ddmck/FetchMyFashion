@@ -32,6 +32,11 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
       $scope.handleLoginBtnClick();
     }
   };
+
+  $scope.signOutClick = function() {
+    $scope.signOut();
+    $state.go('account.signIn');
+  };
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
@@ -92,8 +97,19 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
       .then(function(resp) {
         $state.go('welcome')
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
         $scope.error = resp.data.errors[0];
+      });
+  };
+
+  $scope.handleUpdateAccountBtnClick = function() {
+    $auth.updateAccount($scope.updateAccountForm)
+      .then(function(resp) { 
+        $scope.error = "Details updated successfully"
+      })
+      .catch(function(resp) { 
+        $scope.nameError = resp.data.errors.name[0]
+        $scope.emailError = resp.data.errors.email[0]
       });
   };
 }]);
