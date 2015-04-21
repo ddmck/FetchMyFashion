@@ -86,7 +86,7 @@ gulp.task('site', function(){
 gulp.task('moveToDist', function(){
   gulp.src('src/partials/*').pipe(gulp.dest('dist/partials/'));
   gulp.src('src/templates/*').pipe(gulp.dest('dist/templates/'));
-  gulp.src('src/images/*').pipe(gulp.dest('dist/images/'));
+  gulp.src('src/images/**').pipe(gulp.dest('dist/images/'));
   gulp.src('build/js/lib.js').pipe(gulp.dest('dist/js/'));
 });
 
