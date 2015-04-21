@@ -642,7 +642,6 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
   $scope.selectSize = function(size){
     $scope.size = size;
-    console.log($scope.size);
     $scope.showMenu = false;
     $scope.product.selectedSize = size;
   };
