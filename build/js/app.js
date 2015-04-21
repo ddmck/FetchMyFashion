@@ -1,4 +1,5 @@
 var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
+var backendUrl = "http://localhost:3000/";
 var assetsUrl = 'http://localhost:9000/';
 var scraperUrl = 'http://localhost:5000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
@@ -1880,6 +1881,11 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     Meta.set("slug", $scope.product.slug);
     var sizes = _.map($scope.product.sizes, function(size){ return size.name }).join(" | ");
     Meta.set("sizes", sizes);
+    console.log($scope.product.image_urls);
+    if (!$scope.product.image_urls) {
+      $scope.product.image_urls = [$scope.currentImg]
+    }
+
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
     if ($scope.product.deeplink) {
@@ -1929,12 +1935,31 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     $scope.showMenu = !$scope.showMenu;
   };
 
+  $scope.currentIndex = 0;
+
+  $scope.setCurrentSlideIndex = function (index) {
+      $scope.currentIndex = index;
+  };
+
+  $scope.isCurrentSlideIndex = function (index) {
+      return $scope.currentIndex === index;
+  };
+
+  $scope.prevSlide = function () {
+    $scope.currentIndex = ($scope.currentIndex < $scope.product.image_urls.length - 1) ? ++$scope.currentIndex : 0;
+  };
+
+  $scope.nextSlide = function () {
+    $scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.product.image_urls.length - 1;
+  };
+
   $scope.setProductImg = function(imgUrl) {
     $scope.currentImg = imgUrl;
   };
 
   $scope.selectSize = function(size){
     $scope.size = size;
+    console.log($scope.size);
     $scope.showMenu = false;
     $scope.product.selectedSize = size;
   };

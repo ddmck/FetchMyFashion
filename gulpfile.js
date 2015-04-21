@@ -80,7 +80,7 @@ gulp.task('site', function(){
   gulp.src('src/index.html').pipe(gulp.dest('build/'));
   gulp.src('src/partials/*').pipe(gulp.dest('build/partials/'));
   gulp.src('src/templates/*').pipe(gulp.dest('build/templates/'));
-  gulp.src('src/images/*').pipe(gulp.dest('build/images/'));
+  gulp.src('src/images/**').pipe(gulp.dest('build/images/'));
 });
 
 gulp.task('moveToDist', function(){

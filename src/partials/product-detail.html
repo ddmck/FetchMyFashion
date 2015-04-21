@@ -1,15 +1,28 @@
 <section class="row">
   <div class="side-image">
-    <div class="images-wrapper" ng-style="{'background-image':'url('+ currentImg +')'}"></div>
+    <div class="images-wrapper">
+      <div class="container slider">
+        <img ng-repeat="img in product.image_urls" class="slide slide-animation" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{img}}"></img>
+        <a class="arrow prev" ng-click="nextSlide()" ng-show="product.image_urls.length > 1"></a>
+        <a class="arrow next" ng-click="prevSlide()" ng-show="product.image_urls.length > 1"></a>
+        <nav class="nav" ng-show="product.image_urls.length > 1">
+          <div class="wrapper">
+            <ul class="dots">
+              <li class="dot" ng-repeat="img in product.image_urls">
+                <a href="#" ng-class="{'active':isCurrentSlideIndex($index)}"
+                        ng-click="setCurrentSlideIndex($index);">{{$index}}</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
     <div class="side-image-content">
       <a ui-sref="brandView({brandId: product.brand_slug, id: product.brand_id})">
         <h4>{{product.brand_name}}</h4>
       </a>
-      <h1>{{product.name}}</h1>
+      <h5>{{product.name}}</h5>
       <p>{{ product.display_price | currency : '£' }}</p>
-      <ul class="additional-images"><li ng-repeat="img in product.image_urls">
-        <img class="thumb" ng-src="{{img}}" ng-click="setProductImg(img)" ng-class="{current: currentImg === img}"></img>
-      </li></ul>
       
       <strong ng-show="product && product.sizes.length > 0" style="display: block">Select a size</strong>
       <div ng-show="product && product.sizes.length > 0" ng-size-dropdown></div> 
@@ -19,8 +32,8 @@
         'other': 'items'
       }"></ng-pluralize>)</button>
 
-      <strong style="display: block">Want to be notified of price changes?</strong>
-      <button ng-click="addToWishlist(product)"><span ng-show="!checkIfWishedFor()">Save</span><span ng-show="checkIfWishedFor()">Saved</span></button>
+      <!-- <strong style="display: block">Want to be notified of price changes?</strong> -->
+      <button ng-click="addToWishlist(product)"><span ng-show="!checkIfWishedFor()">Save for later</span><span ng-show="checkIfWishedFor()">Saved</span></button>
       <div ng-product-details></div>
     </div>
   </div>  
