@@ -1,6 +1,7 @@
 var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
 var backendUrl = "http://localhost:3000/";
 var assetsUrl = 'http://localhost:9000/';
+var backendUrl = 'http://localhost:3000/';
 var scraperUrl = 'http://localhost:5000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
 
@@ -1391,7 +1392,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
   $scope.handlePwdResetBtnClick = function() {
     $auth.requestPasswordReset($scope.passwordResetForm)
       .success(function(resp) { 
-        $scope.error = "You'll receive an email with a link shortly"
+        $scope.result = "You'll receive an email with a link shortly, didn't receive an email? Click the button below"
       })
       .error(function(resp) { 
         $scope.error = resp.errors[0];
@@ -1399,10 +1400,9 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
   };
 
   $scope.handleUpdatePasswordBtnClick = function() {
-    console.log($stateParams);
     $auth.updatePassword($scope.changePasswordForm)
       .then(function(resp) {
-        $scope.error = "Password Updated"
+        $scope.result = "Password Updated"
       })
       .catch(function(resp) {
         $scope.error = resp.data.errors[0];
@@ -1412,7 +1412,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
   $scope.handleDestroyAccountBtnClick = function() {
     $auth.destroyAccount()
       .then(function(resp) {
-        $state.go('welcome')
+        $scope.result = "Your account has been closed"
       })
       .catch(function(resp) {
         $scope.error = resp.data.errors[0];
@@ -1421,12 +1421,16 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
 
   $scope.handleUpdateAccountBtnClick = function() {
     $auth.updateAccount($scope.updateAccountForm)
-      .then(function(resp) { 
-        $scope.error = "Details updated successfully"
+      .then(function(resp) {
+        $scope.result = "Details updated successfully";
       })
       .catch(function(resp) { 
-        $scope.nameError = resp.data.errors.name[0]
-        $scope.emailError = resp.data.errors.email[0]
+        if (resp.data.errors.name)
+          {
+            $scope.nameError = resp.data.errors.name[0]
+          }else{
+            $scope.emailError = resp.data.errors.email[0]
+          };
       });
   };
 }]);
