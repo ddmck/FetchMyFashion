@@ -2,7 +2,7 @@
   <div class="side-image">
     <div class="images-wrapper">
       <div class="container slider">
-        <img ng-repeat="img in product.image_urls" class="slide slide-animation" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{img}}"></img>
+        <img ng-repeat="img in product.image_urls" class="slide slide-animation" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{img}}" alt="{{product.name + ' by ' + product.brand_name + ' ' + ($index + 1)}}"></img>
         <a class="arrow prev" ng-click="nextSlide()" ng-show="product.image_urls.length > 1"></a>
         <a class="arrow next" ng-click="prevSlide()" ng-show="product.image_urls.length > 1"></a>
         <nav class="nav" ng-show="product.image_urls.length > 1">
@@ -22,7 +22,7 @@
         <h4>{{product.brand_name}}</h4>
       </a>
       <h5>{{product.name}}</h5>
-      <p>{{ product.display_price | currency : '£' }}</p>
+      <h3>{{ product.display_price | currency : '£' }}</h3>
       
       <strong ng-show="product && product.sizes.length > 0" style="display: block">Select a size</strong>
       <div ng-show="product && product.sizes.length > 0" ng-size-dropdown></div> 

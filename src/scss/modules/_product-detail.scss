@@ -129,19 +129,18 @@ section.row {
   }
 
   .side-image-content {
-    // @include span-columns(12);
     padding: 1em 1em 4em 1em;
     background: $side-image-content-background;
 
+    flex-grow: 8;
+    flex-shrink: 0;
+    flex-basis: 200px;
     @include media($large-screen) {
-      flex-grow: 8;
-      flex-shrink: 0;
-      flex-basis: 200px;
       padding: 4em 4em 8em 4em;
     }
 
-    h1 {
-      margin-bottom: 0.9em;
+    h5 {
+      margin-bottom: 1em;
       text-transform: capitalize;
     }
 
@@ -154,6 +153,11 @@ section.row {
       margin-bottom: 1.3em;
       padding: 3px 8px;
       text-transform: uppercase;
+    }
+
+    h3 {
+      color: $brand-black;
+      margin-bottom: 1em;
     }
 
     p {
