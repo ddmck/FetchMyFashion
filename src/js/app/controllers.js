@@ -567,9 +567,10 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     Meta.set("slug", $scope.product.slug);
     var sizes = _.map($scope.product.sizes, function(size){ return size.name }).join(" | ");
     Meta.set("sizes", sizes);
-    console.log($scope.product.image_urls);
-    if (!$scope.product.image_urls) {
-      $scope.product.image_urls = [$scope.currentImg]
+    if ($scope.product.image_urls) {
+      $scope.product.image_urls = _.uniq($scope.product.image_urls);
+    } else {
+      $scope.product.image_urls = [$scope.currentImg];
     }
 
     $scope.getStoreDetails($scope.product);
