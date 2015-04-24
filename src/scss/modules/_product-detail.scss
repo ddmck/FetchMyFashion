@@ -23,18 +23,19 @@ section.row {
 }
 
 .title {
-  background-color: tint($brand-black, 10);
+  background-color: white;
   width: 100%;
   padding-top: 1em;
   padding-bottom: 1em;
   @include media($large-screen) {
-    padding-top: 2em;
-    padding-bottom: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
   }
   section.row {
     margin-top: 0em;
-    color: #e7e7e7;
+    color: $brand-black;
     h1 {
+      font-weight: 300;
       text-align: center;
       text-transform: capitalize;
       font-size: 1.25em;
@@ -42,7 +43,6 @@ section.row {
         font-size: $base-font-size * 2.25;
       }
     }
-
     .table {
       display: table;   /* Allow the centering to work */
       margin: 1em auto 0 auto;
@@ -57,17 +57,16 @@ section.row {
             padding-right: 0;
           }
           a {
-            color: #e7e7e7;
+            color: $brand-black;
 
             &:hover {
-              color: darken(#e7e7e7, 20);
+              color: darken($brand-black, 20);
             }
           }
           
         }
       }
     }
-    
   }
 }
 
