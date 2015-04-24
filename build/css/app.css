@@ -1795,12 +1795,28 @@ form.search-bar {
         margin-bottom: 0;
         float: left;
         margin-right: 1em; } }
-    .search-tools .filter:last-child label {
-      text-align: right; }
+    @media screen and (min-width: 53.75em) {
+      .search-tools .filter:last-child {
+        float: right;
+        margin-right: 0em; } }
+    @media screen and (min-width: 53.75em) {
+      .search-tools .filter:last-child label {
+        text-align: right; } }
     .search-tools .filter .selectize-control {
       min-width: 110px; }
       .search-tools .filter .selectize-control .selectize-input {
         padding-right: 2em; }
+
+button.show-filters {
+  margin-left: 1em;
+  margin-right: 1em;
+  width: calc(100% - 2em); }
+  @media screen and (min-width: 53.75em) {
+    button.show-filters {
+      display: none; } }
+
+button.hide-filters {
+  width: 100%; }
 
 .accordion-tabs {
   line-height: 1.5;
