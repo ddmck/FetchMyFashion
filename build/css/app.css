@@ -1473,9 +1473,9 @@ section.row {
     -webkit-flex-shrink: 0;
         -ms-flex-negative: 0;
             flex-shrink: 0;
-    -webkit-flex-basis: 200px;
-        -ms-flex-preferred-size: 200px;
-            flex-basis: 200px; }
+    -webkit-flex-basis: 250px;
+        -ms-flex-preferred-size: 250px;
+            flex-basis: 250px; }
   .side-image .side-image-content {
     padding: 1em 1em 4em 1em;
     background: #F9F9F9;
