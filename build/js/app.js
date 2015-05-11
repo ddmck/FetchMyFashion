@@ -1892,17 +1892,17 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
-    if ($scope.product.deeplink) {
-      $scope.scraping = true
+    // if ($scope.product.deeplink) {
+    //   $scope.scraping = true
 
-      $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
-        $scope.product.sizes = _.map(data.sizes, function(size) { 
-          return {name: size.name.split(" - ")[0]}; 
-        });
-        $scope.scraping = false
-      })
+    //   $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
+    //     $scope.product.sizes = _.map(data.sizes, function(size) { 
+    //       return {name: size.name.split(" - ")[0]}; 
+    //     });
+    //     $scope.scraping = false
+    //   })
 
-    }
+    // }
     
   });
 
