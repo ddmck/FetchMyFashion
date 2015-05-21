@@ -438,6 +438,10 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 })
 
 app.run(function($rootScope, $location, Meta) {
+  $rootScope.$on('$stateChangeStart', function (event, nextState, currentState) {
+    $rootScope.lastScrollLocation = document.documentElement.scrollTop || document.body.scrollTop;
+  });
+
 
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
