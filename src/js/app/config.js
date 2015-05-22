@@ -255,7 +255,8 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
       },
       onExit: function(Products){
-        Products.setLastScrollLocation(document.body.scrollTop)
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -315,7 +316,8 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
       },
       onExit: function(Products){
-        Products.setLastScrollLocation(document.body.scrollTop)
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -361,7 +363,8 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
       },
       onExit: function(Products){
-        Products.setLastScrollLocation(document.body.scrollTop)
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
