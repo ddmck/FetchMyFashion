@@ -250,9 +250,13 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/new.html',
       controller: function(Filters, Products){
         Products.resetProducts();
-        // Products.resetPage();
         Filters.resetAll();
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -309,6 +313,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         Filters.setFilter('category', $stateParams.catID);
         Filters.setFilter('gender', genderVar);
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -351,6 +360,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.searchString = $stateParams.searchString;
         Products.resetProducts();
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -438,7 +452,6 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 })
 
 app.run(function($rootScope, $location, Meta) {
-
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());

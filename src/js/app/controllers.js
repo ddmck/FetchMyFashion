@@ -198,6 +198,7 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
       Products.fetchProducts()
     }
   };
+
 }]);
 
 app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStorage', function($scope, Filters, Products, $localStorage){
@@ -552,7 +553,6 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
   $scope.basket = Basket;
   $scope.basket.fetchBasketItemProducts();
   $scope.size = null;
-
 
 
 
