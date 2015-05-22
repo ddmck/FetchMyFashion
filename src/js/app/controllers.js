@@ -147,7 +147,6 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
   productCtrl.products = Products;
   // WishlistItems.fetchWishlistItems();
   this.filters = Filters;
-  console.log(Products.scrollActive())
 
   this.viewProduct = function(product) {
     $state.go('productDetail', {productID: product.id})
@@ -200,11 +199,6 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
     }
   };
 
-  if (Products.scrollActive() === true) {
-    console.log($scope.lastScrollLocation);
-    document.body.scrollTop = $scope.lastScrollLocation
-    $scope.lastScrollLocation = null;
-  }
 }]);
 
 app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStorage', function($scope, Filters, Products, $localStorage){
