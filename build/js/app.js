@@ -1,5 +1,5 @@
 var app = angular.module('App', ['infinite-scroll', 'ngSanitize', 'btford.markdown', 'ui.router', 'ng-token-auth', 'ipCookie', 'ngStorage', 'angularPayments', 'btford.modal', 'akoenig.deckgrid', 'selectize']);
-var backendUrl = "https://www.shopshopgo.com/";
+var backendUrl = "http://localhost:3000/";
 var assetsUrl = 'http://localhost:9000/';
 var scraperUrl = 'http://localhost:5000/';
 Stripe.setPublishableKey('pk_test_mfQJDA4oT57DLFi7l0HYu782');
@@ -255,9 +255,13 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/new.html',
       controller: function(Filters, Products){
         Products.resetProducts();
-        // Products.resetPage();
         Filters.resetAll();
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -314,6 +318,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         Filters.setFilter('category', $stateParams.catID);
         Filters.setFilter('gender', genderVar);
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -356,6 +365,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.searchString = $stateParams.searchString;
         Products.resetProducts();
         Products.fetchProducts();
+        setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
+      },
+      onExit: function(Products){
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
+        Products.setLastScrollLocation(lastScroll)
       }
     })
 
@@ -443,7 +457,6 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 })
 
 app.run(function($rootScope, $location, Meta) {
-
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());
@@ -1180,8 +1193,15 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   var page = 1;
   var searching = true;
   var scrollActive = false;
+  var lastScrollLocation = 0;
   var lastResetFrom;
   return {
+    setLastScrollLocation: function(y) {
+      lastScrollLocation = y
+    },
+    getLastScrollLocation: function() {
+      return lastScrollLocation
+    },
     scrollActive: function(){
       return scrollActive;
     },
@@ -1206,11 +1226,15 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
         scrollActive = false;
         lastResetFrom = $location.absUrl();
         page = 1
+        lastScrollLocation = 0
       } else if ($location.absUrl() !== lastResetFrom) {
         products = [];
         scrollActive = false;
         lastResetFrom = $location.absUrl();
-        page = 1
+        page = 1;
+        lastScrollLocation = 0;
+      } else {
+        lastScrollLocation = lastScrollLocation;
       }
     },
     resetPage: function(){
@@ -1232,7 +1256,8 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
                                                     style_id: Filters.getFilters().style,
-                                                    brand_id: Filters.getFilters().brand
+                                                    brand_id: Filters.getFilters().brand,
+                                                    out_of_stock: false
                                                   }, 
                                                   sort: Filters.getFilters().sort, 
                                                   search_string: Filters.getFilters().searchString
@@ -1515,6 +1540,7 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
       Products.fetchProducts()
     }
   };
+
 }]);
 
 app.controller('GenderController', ['$scope', 'Filters', 'Products', '$localStorage', function($scope, Filters, Products, $localStorage){
@@ -1869,7 +1895,6 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
   $scope.basket = Basket;
   $scope.basket.fetchBasketItemProducts();
   $scope.size = null;
-
 
 
 
