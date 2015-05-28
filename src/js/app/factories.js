@@ -21,7 +21,6 @@ app.factory('Filters', ['$location', function($location){
     },
     resetAll: function(hard){
       if (hard) {
-        
         filters = {gender: filters.gender};
         lastResetFrom = $location.absUrl();
       } else if (lastResetFrom !== $location.absUrl()) {
@@ -438,6 +437,29 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     },
     currentlySearching: function(){
       return searching;
+    }
+  };
+}]);
+
+app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
+  var moreLikeThis = [];
+  return {
+    getMoreLikeThis: function(){
+      return moreLikeThis;
+    },
+    fetchMoreLikeThis: function(item){
+      searching = true;
+      $http.get(backendUrl + 'more_like_this.json', { async: true, 
+                                                      params: {
+                                                        id: item.id
+                                                      } 
+                                                    })
+                                                    .success(function(data){
+                                                      moreLikeThis = [];
+                                                      moreLikeThis = moreLikeThis.concat(data);
+                                                      moreLikeThis = _.reject(moreLikeThis, {'id': item.id})
+                                                      $rootScope.$broadcast('moreLikeThisLoaded')
+                                                    });
     }
   };
 }]);
