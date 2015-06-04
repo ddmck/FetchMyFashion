@@ -134,17 +134,21 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.localStorage = $localStorage;
         $scope.handleStripe = function(status, response){
           if(response.error) {
-            $scope.billingForm.error = response.error;
+            if(response.error.message) {
+              $scope.billingForm.error = response.error.message;
+            } else {
+              $scope.billingForm.error = response.error; 
+            }
           } else {
             // got stripe token, now charge it or smt
             $localStorage.token = response.id;
             $localStorage.last4 = $scope.number.slice(-4);
-            $state.go('pay.confirmation')
+            $state.go('pay.confirmation');
           }
         };
         $scope.clear = function(){
           $localStorage.token = null;
-        }
+        };
       },
       onEnter: function(){
         window.scrollTo(0,0);
