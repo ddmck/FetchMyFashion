@@ -546,7 +546,7 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
-app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage){
+app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope){
   // get the id
   $scope.showMenu = false;
   $scope.id = $stateParams.productID;
@@ -554,7 +554,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
   $scope.basket.fetchBasketItemProducts();
   $scope.size = null;
 
-
+  $scope.MLT = MoreLikeThis;
 
   $http.get(backendUrl + 'products/' + $scope.id + '.json', {async: true}).success(function(data){
     $scope.product = data;
@@ -575,6 +575,8 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
+
+    $scope.MLT.fetchMoreLikeThis($scope.product);
     // if ($scope.product.deeplink) {
     //   $scope.scraping = true
 
