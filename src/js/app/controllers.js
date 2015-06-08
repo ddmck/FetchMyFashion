@@ -592,6 +592,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
   }).error(function(data, status){
     if (status === 404){
       $state.go('products.new');
+      $rootScope.error = data.response;
     }
   });
 
