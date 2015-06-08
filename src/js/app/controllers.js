@@ -546,7 +546,7 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
-app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope){
+app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', '$state', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope, $state){
   // get the id
   $scope.showMenu = false;
   $scope.id = $stateParams.productID;
@@ -589,6 +589,10 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
     // }
     
+  }).error(function(data, status){
+    if (status === 404){
+      $state.go('products.new');
+    }
   });
 
   $scope.addToWishlist = function(product){
