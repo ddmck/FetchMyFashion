@@ -36,14 +36,16 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
   var trends = [];
   return {
     fetchTrends: function(){
-      $http.get(backendUrl + 'features.json', {async: true}).success(function(data){
-        trends = data;
-      });
+      if (trends.length < 1){
+        $http.get(backendUrl + 'features.json', {async: true}).success(function(data){
+          trends = data;
+        });
+      }
     },
     list: function(){
       return trends;
     }
-  }
+  };
 }]);
 
 
@@ -51,57 +53,66 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   return {
     fetchCategories: function(){
-      $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
-        categories = data;
-        $rootScope.$broadcast('catsLoaded');
-        $rootScope.$broadcast('stylesLoaded');
-      });
+      if (categories.length < 1){
+        $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
+          categories = data;
+          $rootScope.$broadcast('catsLoaded');
+          $rootScope.$broadcast('stylesLoaded');
+        });
+      }
     },
     list: function(){
       return categories;
     }
 
-  }
+  };
 }]);
 
 app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
   return {
     fetchColors: function(){
-      $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
-        colors = data;
-        $rootScope.$broadcast('colorsLoaded');
-      });
+      if (colors.length < 1){
+        $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
+          colors = data;
+          $rootScope.$broadcast('colorsLoaded');
+        });
+      }
     },
     list: function(){
       return colors;
     }
 
-  }
+  };
 }]);
 
 app.factory('Materials', [ '$http', function($http){
   var materials = [];
   return {
+
     fetchMaterials: function(){
-      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
-        materials = data;
-      });
+      if (categories.length < 1){
+        $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
+          materials = data;
+        });
+      }
     },
     list: function(){
       return materials;
     }
 
-  }
+  };
 }]);
 
 app.factory('Stores', [ '$http', function($http){
   var stores = [];
   return {
     fetchStores: function(){
-      $http.get(backendUrl + 'stores.json', {async: true}).success(function(data){
-        stores = data;
-      });
+      if (stores.length < 1){
+        $http.get(backendUrl + 'stores.json', {async: true}).success(function(data){
+          stores = data;
+        });
+      }
     },
     list: function(){
       return stores;
@@ -130,13 +141,13 @@ app.factory('Stores', [ '$http', function($http){
         return store.standard_price
       }
     }
-  }
+  };
 }]);
 
 app.factory('Deliveries', ['$localStorage', function($localStorage){
   if (!$localStorage.deliveries){
     $localStorage.deliveries = [];
-  };
+  }
   return {
     list: function(){
       return $localStorage.deliveries
@@ -166,18 +177,20 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
       }
       
     }
-  }
-}])
+  };
+}]);
 
 
 app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var subCategories = [];
   return {
     fetchSubCategories: function(){
-      $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
-        subCategories = data;
-        $rootScope.$broadcast('subCatsLoaded'); 
-      });
+      if (subCategories.length < 1){
+        $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
+          subCategories = data;
+          $rootScope.$broadcast('subCatsLoaded'); 
+        });
+      }
     },
     list: function(){
       return subCategories;
@@ -187,17 +200,19 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
         return subCat.category_id == Filters.getFilters().category
       })
     }
-  }
+  };
 }]);
 
 app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
   return {
     fetchStyles: function(){
-      $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
-        styles = data;
-        $rootScope.$broadcast('stylesLoaded');
-      });
+      if (styles.length < 1){
+        $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
+          styles = data;
+          $rootScope.$broadcast('stylesLoaded');
+        });
+      }
     },
     list: function(){
       return styles;
@@ -207,21 +222,23 @@ app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filter
         return style.category_id == Filters.getFilters().category
       })
     }
-  }
+  };
 }]);
 
 app.factory('Orders', [ '$http', function($http){
   var orders = [];
   return {
     fetchOrders: function(){
-      $http.get(backendUrl + 'api/orders.json', {async: true}).success(function(data){
-        orders = data;
-      });
+      if (orders.length < 1){
+        $http.get(backendUrl + 'api/orders.json', {async: true}).success(function(data){
+          orders = data;
+        });
+      }
     },
     list: function(){
       return orders;
     }
-  }
+  };
 }]);
 
 app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localStorage){
@@ -234,9 +251,11 @@ app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localS
       $localStorage.wishlistItems = array;
     },
     fetchWishlistItemProducts: function(){
-      $http.get(backendUrl + 'api/wishlist_items.json').success(function(data){
-        wishlistItems = data;
-      });
+      if (wishlistItems.length < 1){
+        $http.get(backendUrl + 'api/wishlist_items.json').success(function(data){
+          wishlistItems = data;
+        });
+      }
     },
     listProducts: function(){
       return _.map(wishlistItems, function(wl){
@@ -468,27 +487,31 @@ app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
   var materials = [];
   return {
     fetchMaterials: function(){
-      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
-        materials = data;
-        $rootScope.$broadcast('materialsLoaded');
-      });
+      if (materials.length < 1){
+        $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
+          materials = data;
+          $rootScope.$broadcast('materialsLoaded');
+        });
+      }
     },
     list: function(){
       return materials;
     }
 
-  }
+  };
 }]);
 
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {}
   o.brands = [];
   o.fetchBrands = function(){
-    $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
-      o.brands = data;
-      $rootScope.$broadcast('brandsLoaded');       
-    });
-  }
+    if (o.brands.length < 1){
+      $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
+        o.brands = data;
+        $rootScope.$broadcast('brandsLoaded');       
+      });
+    }
+  };
 
   o.formattedList = function(){
     return _.groupBy(o.brands, function(br){
