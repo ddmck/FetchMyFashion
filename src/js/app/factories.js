@@ -449,6 +449,7 @@ app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
     },
     fetchMoreLikeThis: function(item){
       searching = true;
+      moreLikeThis = [];
       $http.get(backendUrl + 'more_like_this.json', { async: true, 
                                                       params: {
                                                         id: item.id
