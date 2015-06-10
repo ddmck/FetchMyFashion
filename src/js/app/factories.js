@@ -61,7 +61,7 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
       return categories;
     }
 
-  }
+  };
 }]);
 
 app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
@@ -70,14 +70,25 @@ app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
     fetchColors: function(){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
+        console.log("Fetched Colors");
         $rootScope.$broadcast('colorsLoaded');
       });
     },
     list: function(){
       return colors;
+    },
+    addCount: function(newArr){
+      array = [];
+      _.forEach(newArr, function(n){
+        array = (_.forEach(colors, function(v) {
+          if (n.name == v.name) {
+            v.count = n.count;
+          }
+        }));
+      });
+      colors = array;
     }
-
-  }
+  };
 }]);
 
 app.factory('Materials', [ '$http', function($http){
@@ -343,7 +354,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   }
 }]);
 
-app.factory('Products', ['$http', 'Filters', '$location', function($http, Filters, $location){
+app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', function($http, Filters, $location, Colors, Brands, $rootScope){
 
   var query = $location.search();
   Filters.useQuery(query);
@@ -432,6 +443,15 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     scrollActive = false;
                                                     searching = false;
                                                   }
+                                                  if (data.colors.length > 0) {
+                                                    Colors.addCount(data.colors);
+                                                    $rootScope.$broadcast('colorsLoaded');
+                                                  }
+                                                  // if (data.brands.length > 0) {
+                                                  //   Brands.addCount(data.brands);
+                                                  //   console.log(Brands.list());
+                                                  //   $rootScope.$broadcast('brandsLoaded');
+                                                  // }
        
       });
     },
@@ -477,31 +497,43 @@ app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
       return materials;
     }
 
-  }
+  };
 }]);
 
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
-  var o = {}
+  var o = {};
   o.brands = [];
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
       $rootScope.$broadcast('brandsLoaded');       
     });
-  }
+  };
 
   o.formattedList = function(){
     return _.groupBy(o.brands, function(br){
       return br.name[0].toLowerCase();
     });
-  }
+  };
 
   o.list = function(){
     return o.brands;
-  }
+  };
 
-  return o
-}])
+  o.addCount = function(newArr){
+    array = [];
+    _.forEach(newArr, function(n){
+      array = (_.forEach(o.colors, function(v) {
+        if (n.name == v.name) {
+          v.count = n.count;
+        }
+      }));
+    });
+    o.brands = array;
+  };
+
+  return o;
+}]);
 
 app.factory('Meta', function(){
   content = {};
@@ -512,7 +544,7 @@ app.factory('Meta', function(){
     set: function(setter, value){
       content[setter] = value;
     }
-  }
+  };
 });
 
 app.factory('authModal', function (btfModal) {
@@ -521,4 +553,4 @@ app.factory('authModal', function (btfModal) {
     controllerAs: 'modal',
     templateUrl: assetsUrl + 'partials/auth-modal.html'
   });
-})
+});
