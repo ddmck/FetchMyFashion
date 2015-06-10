@@ -423,8 +423,8 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                   search_string: Filters.getFilters().searchString
                                                   
                                                 }}).success(function(data){
-                                                  if (data.length > 0) {
-                                                    products = products.concat(data);
+                                                  if (data.products.length > 0) {
+                                                    products = products.concat(data.products);
                                                     page += 1;
                                                     scrollActive = true;
                                                     searching = false;
