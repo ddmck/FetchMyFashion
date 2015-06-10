@@ -377,7 +377,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
-    $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands)
+    $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
   });
 
   $scope.brands = Brands;
