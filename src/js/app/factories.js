@@ -354,7 +354,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   }
 }]);
 
-app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', function($http, Filters, $location, Colors, Brands, $rootScope){
+app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', function($http, Filters, $location, Colors, Brands, $rootScope, Materials){
 
   var query = $location.search();
   Filters.useQuery(query);
@@ -452,6 +452,11 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                   //   console.log(Brands.list());
                                                   //   $rootScope.$broadcast('brandsLoaded');
                                                   // }
+                                                  if (data.materials.length > 0) {
+                                                    Materials.addCount(data.materials);
+                                                    console.log(Materials.list());
+                                                    $rootScope.$broadcast('materialsLoaded');
+                                                  }
        
       });
     },
@@ -495,8 +500,18 @@ app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
     },
     list: function(){
       return materials;
+    },
+    addCount: function(newArr){
+      array = [];
+      _.forEach(newArr, function(n){
+        array = (_.forEach(materials, function(v) {
+          if (n.name == v.name) {
+            v.count = n.count;
+          }
+        }));
+      });
+      materials = array;
     }
-
   };
 }]);
 
@@ -523,7 +538,7 @@ app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   o.addCount = function(newArr){
     array = [];
     _.forEach(newArr, function(n){
-      array = (_.forEach(o.colors, function(v) {
+      array = (_.forEach(o.brands, function(v) {
         if (n.name == v.name) {
           v.count = n.count;
         }
