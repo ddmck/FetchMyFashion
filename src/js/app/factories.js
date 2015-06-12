@@ -66,27 +66,32 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
 
 app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
+  var loaded = false;
   return {
     fetchColors: function(){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
-        console.log("Fetched Colors");
-        $rootScope.$broadcast('colorsLoaded');
+        if (!loaded) {$rootScope.$broadcast('colorsLoaded'); loaded = true;}
       });
     },
     list: function(){
       return colors;
     },
     addCount: function(newArr){
-      array = [];
-      _.forEach(newArr, function(n){
-        array = (_.forEach(colors, function(v) {
-          if (n.name == v.name) {
-            v.count = n.count;
+      var array = [];
+      _.map(colors, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
           }
-        }));
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
       });
-      colors = array;
+      $rootScope.$broadcast('colorsLoaded');
     }
   };
 }]);
@@ -444,19 +449,19 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     searching = false;
                                                   }
                                                   if (data.colors.length > 0) {
+                                                    Colors.fetchColors();
                                                     Colors.addCount(data.colors);
-                                                    $rootScope.$broadcast('colorsLoaded');
                                                   }
                                                   // if (data.brands.length > 0) {
                                                   //   Brands.addCount(data.brands);
                                                   //   console.log(Brands.list());
                                                   //   $rootScope.$broadcast('brandsLoaded');
                                                   // }
-                                                  if (data.materials.length > 0) {
-                                                    Materials.addCount(data.materials);
-                                                    console.log(Materials.list());
-                                                    $rootScope.$broadcast('materialsLoaded');
-                                                  }
+                                                  // if (data.materials.length > 0) {
+                                                  //   Materials.addCount(data.materials);
+                                                  //   console.log(Materials.list());
+                                                  //   $rootScope.$broadcast('materialsLoaded');
+                                                  // }
        
       });
     },
