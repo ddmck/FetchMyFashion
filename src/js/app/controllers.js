@@ -547,13 +547,20 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
-app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope){
+app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', '$state', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope, $state){
   // get the id
   $scope.showMenu = false;
+  if ($scope.errorSeen) { $rootScope.$broadcast("hideError"); }
   $scope.id = $stateParams.productID;
   $scope.basket = Basket;
   $scope.basket.fetchBasketItemProducts();
   $scope.size = null;
+  $rootScope.$on('hideError', function(){
+    $rootScope.error = null;
+  });
+  $rootScope.$on('$stateChangeSuccess', function(event, toState){
+    if (toState.name != "products.new") { $rootScope.$broadcast("hideError"); }
+  });
 
   $scope.MLT = MoreLikeThis;
 
@@ -590,6 +597,11 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
     // }
     
+  }).error(function(data, status){
+    if (status === 404){
+      $state.go('products.new');
+      $rootScope.error = data.response;
+    }
   });
 
   $scope.addToWishlist = function(product){
