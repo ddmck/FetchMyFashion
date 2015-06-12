@@ -237,9 +237,9 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
   var changed;
   Categories.fetchCategories();
   $scope.catId = Filters.getFilters().category;
-  $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
+  $scope.myCats = [{id: 0, displayName: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
-    $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
+    $scope.myCats = [{id: 0, displayName: "All"}].concat(Categories.list());
   });
 
 
@@ -248,7 +248,8 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
       searchField: 'name',
       allowEmptyOption: true
