@@ -49,18 +49,34 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 
 app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
+  var loaded = false;
   return {
     fetchCategories: function(){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
-        $rootScope.$broadcast('catsLoaded');
+        if (!loaded) { $rootScope.$broadcast('catsLoaded'); loaded = true; }
         $rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
       return categories;
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(categories, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('catsLoaded');
     }
-
   };
 }]);
 
@@ -359,7 +375,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   }
 }]);
 
-app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', function($http, Filters, $location, Colors, Brands, $rootScope, Materials){
+app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', 'Categories', function($http, Filters, $location, Colors, Brands, $rootScope, Materials, Categories){
 
   var query = $location.search();
   Filters.useQuery(query);
@@ -451,6 +467,10 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                   if (data.colors.length > 0) {
                                                     Colors.fetchColors();
                                                     Colors.addCount(data.colors);
+                                                  }
+                                                  if (data.categories.length > 0) {
+                                                    Categories.fetchCategories();
+                                                    Categories.addCount(data.categories);
                                                   }
                                                   // if (data.brands.length > 0) {
                                                   //   Brands.addCount(data.brands);
