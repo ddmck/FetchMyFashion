@@ -339,20 +339,20 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
 app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
   var changed;
   $scope.colorId = Filters.getFilters().color;
-  Colors.fetchColors();
-  $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
+  //Colors.fetchColors();
+  $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
-    $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
+    $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
   });
 
   $scope.colors = Colors;
-  
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
-      searchField: 'name',
+      searchField: 'displayName',
       allowEmptyOption: true
     };
 
