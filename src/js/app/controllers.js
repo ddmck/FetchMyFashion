@@ -516,18 +516,19 @@ app.controller('OrdersController', ['$scope', 'Orders', function($scope, Orders)
 app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', function($scope, Filters, Products, Materials){
   
   $scope.materials = [];
-  Materials.fetchMaterials();
-  $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list());
+  //Materials.fetchMaterials();
+  $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list());
   $scope.filters = Filters;
 
   $scope.$on("materialsLoaded", function(){
-    $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list())
+    $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list())
   });
 
   $scope.myConfig = {
     create: false,
     valueField: 'id',
-    labelField: 'name',
+    labelField: 'displayName',
+    sortField: [{field: 'count', direction: 'desc'}],
     maxItems: 1,
     searchField: 'name',
     allowEmptyOption: true
