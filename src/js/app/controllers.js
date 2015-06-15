@@ -424,7 +424,7 @@ app.controller('SearchController', ['$state', 'Filters', 'Products', 'Categories
       $state.go('search', {searchString: searchString});
       ga('send', 'event', 'products', 'search', searchString);
     }
-  }
+  };
 
   this.findCat = function(searchString){
     Filters.removeFilter("category");
