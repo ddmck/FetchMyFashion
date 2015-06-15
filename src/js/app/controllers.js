@@ -374,11 +374,11 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   var changed;
   $scope.brandId = Filters.getFilters().brand;
 
-  Brands.fetchBrands();
-  $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
+  //Brands.fetchBrands();
+  $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
-    $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
+    $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
   });
 
   $scope.brands = Brands;
@@ -386,7 +386,8 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
       searchField: 'name',
       allowEmptyOption: true
