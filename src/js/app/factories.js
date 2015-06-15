@@ -112,7 +112,7 @@ app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   };
 }]);
 
-app.factory('Materials', [ '$http', function($http){
+app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
   var materials = [];
   var loaded = false;
   return {
@@ -493,11 +493,10 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     Materials.fetchMaterials();
                                                     Materials.addCount(data.materials);
                                                   }
-                                                  // if (data.brands.length > 0) {
-                                                  //   Brands.addCount(data.brands);
-                                                  //   console.log(Brands.list());
-                                                  //   $rootScope.$broadcast('brandsLoaded');
-                                                  // }
+                                                  if (data.brands.length > 0) {
+                                                    Brands.fetchBrands();
+                                                    Brands.addCount(data.brands);
+                                                  }
                                                   // if (data.materials.length > 0) {
                                                   //   Materials.addCount(data.materials);
                                                   //   console.log(Materials.list());
@@ -538,10 +537,11 @@ app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {};
   o.brands = [];
+  o.loaded = false;
   o.fetchBrands = function(){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
-      $rootScope.$broadcast('brandsLoaded');       
+      if (!o.loaded) {$rootScope.$broadcast('brandsLoaded'); o.loaded = true;}      
     });
   };
 
@@ -556,15 +556,20 @@ app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   };
 
   o.addCount = function(newArr){
-    array = [];
-    _.forEach(newArr, function(n){
-      array = (_.forEach(o.brands, function(v) {
-        if (n.name == v.name) {
-          v.count = n.count;
+    var array = [];
+    _.map(o.brands, function(n){
+      _.forEach(newArr, function(v){
+        if (v.name == n.name){
+          n.count = v.count;
+          n.displayName = n.name + ' ' + '(' + n.count + ')';
         }
-      }));
+      });
+      if (!n.count){
+        n.count = 0;
+        n.displayName = n.name;
+      }
     });
-    o.brands = array;
+    $rootScope.$broadcast('brandsLoaded');
   };
 
   return o;
