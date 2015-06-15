@@ -305,10 +305,10 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
 app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', function($scope, Filters, Products, Categories, Styles){
   var changed;
   $scope.styleId = Filters.getFilters().style;
-  Styles.fetchStyles();
-  $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+  //Styles.fetchStyles();
+  $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
   $scope.$on("stylesLoaded", function(){
-    $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+    $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
   });
 
   $scope.styles = Styles;
@@ -317,7 +317,8 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   $scope.myConfig = {
     create: false,
     valueField: 'id',
-    labelField: 'name',
+    labelField: 'displayName',
+    sortField: [{field: 'count', direction: 'desc'}],
     maxItems: 1,
     searchField: 'name',
     allowEmptyOption: true
