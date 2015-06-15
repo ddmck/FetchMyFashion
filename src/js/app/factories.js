@@ -114,17 +114,34 @@ app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
 
 app.factory('Materials', [ '$http', function($http){
   var materials = [];
+  var loaded = false;
   return {
     fetchMaterials: function(){
       $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
         materials = data;
+        if (!loaded) {$rootScope.$broadcast('materialsLoaded'); loaded = true;}
       });
     },
     list: function(){
       return materials;
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(materials, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('materialsLoaded');
     }
-
-  }
+  };
 }]);
 
 app.factory('Stores', [ '$http', function($http){
@@ -472,6 +489,10 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     Categories.fetchCategories();
                                                     Categories.addCount(data.categories);
                                                   }
+                                                  if (data.materials.length > 0) {
+                                                    Materials.fetchMaterials();
+                                                    Materials.addCount(data.materials);
+                                                  }
                                                   // if (data.brands.length > 0) {
                                                   //   Brands.addCount(data.brands);
                                                   //   console.log(Brands.list());
@@ -510,32 +531,6 @@ app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
                                                       moreLikeThis = _.reject(moreLikeThis, {'id': item.id})
                                                       $rootScope.$broadcast('moreLikeThisLoaded')
                                                     });
-    }
-  };
-}]);
-
-app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
-  var materials = [];
-  return {
-    fetchMaterials: function(){
-      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
-        materials = data;
-        $rootScope.$broadcast('materialsLoaded');
-      });
-    },
-    list: function(){
-      return materials;
-    },
-    addCount: function(newArr){
-      array = [];
-      _.forEach(newArr, function(n){
-        array = (_.forEach(materials, function(v) {
-          if (n.name == v.name) {
-            v.count = n.count;
-          }
-        }));
-      });
-      materials = array;
     }
   };
 }]);
