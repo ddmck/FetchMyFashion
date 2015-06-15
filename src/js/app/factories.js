@@ -43,7 +43,7 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
     list: function(){
       return trends;
     }
-  }
+  };
 }]);
 
 
@@ -215,8 +215,8 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
       }
       
     }
-  }
-}])
+  };
+}]);
 
 
 app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
@@ -233,19 +233,20 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     },
     availableList: function(){
       return _.filter(subCategories, function(subCat){
-        return subCat.category_id == Filters.getFilters().category
-      })
+        return subCat.category_id == Filters.getFilters().category;
+      });
     }
-  }
+  };
 }]);
 
 app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
+  var loaded = false;
   return {
     fetchStyles: function(){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
-        $rootScope.$broadcast('stylesLoaded');
+        if (!loaded) {$rootScope.$broadcast('stylesLoaded'); loaded = true;}
       });
     },
     list: function(){
@@ -253,10 +254,26 @@ app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filter
     },
     availableList: function(){
       return _.filter(styles, function(style){
-        return style.category_id == Filters.getFilters().category
-      })
+        return style.category_id == Filters.getFilters().category;
+      });
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(styles, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('stylesLoaded');
     }
-  }
+  };
 }]);
 
 app.factory('Orders', [ '$http', function($http){
@@ -270,7 +287,7 @@ app.factory('Orders', [ '$http', function($http){
     list: function(){
       return orders;
     }
-  }
+  };
 }]);
 
 app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localStorage){
@@ -289,7 +306,7 @@ app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localS
     },
     listProducts: function(){
       return _.map(wishlistItems, function(wl){
-        return wl.product
+        return wl.product;
       });
     },
     list: function(){
@@ -392,7 +409,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
   }
 }]);
 
-app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', 'Categories', function($http, Filters, $location, Colors, Brands, $rootScope, Materials, Categories){
+app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', 'Categories', 'Styles', function($http, Filters, $location, Colors, Brands, $rootScope, Materials, Categories, Styles){
 
   var query = $location.search();
   Filters.useQuery(query);
@@ -497,11 +514,10 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     Brands.fetchBrands();
                                                     Brands.addCount(data.brands);
                                                   }
-                                                  // if (data.materials.length > 0) {
-                                                  //   Materials.addCount(data.materials);
-                                                  //   console.log(Materials.list());
-                                                  //   $rootScope.$broadcast('materialsLoaded');
-                                                  // }
+                                                  if (data.styles.length > 0) {
+                                                    Styles.fetchStyles();
+                                                    Styles.addCount(data.styles);
+                                                  }
        
       });
     },
