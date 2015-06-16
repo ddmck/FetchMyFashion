@@ -55,7 +55,7 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
         if (!loaded) { $rootScope.$broadcast('catsLoaded'); loaded = true; }
-        $rootScope.$broadcast('stylesLoaded');
+        //$rootScope.$broadcast('stylesLoaded');
       });
     },
     list: function(){
