@@ -261,7 +261,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     } else {
       changed = Filters.setFilter("category", parseInt(cat_id));
       ga('send', 'event', 'filters', 'selectCategory', cat_id);
-      $rootScope.$broadcast('stylesLoaded');
+      //$rootScope.$broadcast('stylesLoaded');
     }
     
     if (changed) {
