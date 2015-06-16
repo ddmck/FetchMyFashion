@@ -498,23 +498,23 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     scrollActive = false;
                                                     searching = false;
                                                   }
-                                                  if (data.colors.length > 0) {
+                                                  if (data.colors && data.colors.length > 0) {
                                                     Colors.fetchColors();
                                                     Colors.addCount(data.colors);
                                                   }
-                                                  if (data.categories.length > 0) {
+                                                  if (data.categories && data.categories.length > 0) {
                                                     Categories.fetchCategories();
                                                     Categories.addCount(data.categories);
                                                   }
-                                                  if (data.materials.length > 0) {
+                                                  if (data.materials && data.materials.length > 0) {
                                                     Materials.fetchMaterials();
                                                     Materials.addCount(data.materials);
                                                   }
-                                                  if (data.brands.length > 0) {
+                                                  if (data.brands && data.brands.length > 0) {
                                                     Brands.fetchBrands();
                                                     Brands.addCount(data.brands);
                                                   }
-                                                  if (data.styles.length > 0) {
+                                                  if (data.styles && data.styles.length > 0) {
                                                     Styles.fetchStyles();
                                                     Styles.addCount(data.styles);
                                                   }
