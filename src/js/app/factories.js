@@ -51,11 +51,11 @@ app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   var loaded = false;
   return {
-    fetchCategories: function(){
+    fetchCategories: function(dataHolder){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
         if (!loaded) { $rootScope.$broadcast('catsLoaded'); loaded = true; }
-        //$rootScope.$broadcast('stylesLoaded');
+        if (!!dataHolder) {$rootScope.$broadcast('categoriesReceived', dataHolder);}
       });
     },
     list: function(){
@@ -84,10 +84,11 @@ app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
   var loaded = false;
   return {
-    fetchColors: function(){
+    fetchColors: function(dataHolder){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
         if (!loaded) {$rootScope.$broadcast('colorsLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('colorsReceived', dataHolder);}
       });
     },
     list: function(){
@@ -116,10 +117,11 @@ app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
   var materials = [];
   var loaded = false;
   return {
-    fetchMaterials: function(){
+    fetchMaterials: function(dataHolder){
       $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
         materials = data;
         if (!loaded) {$rootScope.$broadcast('materialsLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('materialsReceived', dataHolder);}
       });
     },
     list: function(){
@@ -243,10 +245,11 @@ app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filter
   var styles = [];
   var loaded = false;
   return {
-    fetchStyles: function(){
+    fetchStyles: function(dataHolder){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
         if (!loaded) {$rootScope.$broadcast('stylesLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('stylesReceived', dataHolder);}
       });
     },
     list: function(){
@@ -489,6 +492,20 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                   search_string: Filters.getFilters().searchString
                                                   
                                                 }}).success(function(data){
+                                                  if (data.colors && data.colors.length > 0) {
+                                                    Colors.fetchColors(data.colors);
+                                                  }
+                                                  if (data.categories && data.categories.length > 0) {
+                                                    Categories.fetchCategories(data.categories);
+                                                  }
+                                                  if (data.materials && data.materials.length > 0) {
+                                                    Materials.fetchMaterials(data.materials);
+                                                  }
+                                                  if (data.brands && data.brands.length > 0) {
+                                                    Brands.fetchBrands(data.brands);
+                                                  }
+                                                  if (data.styles && data.styles.length > 0) {
+                                                    Styles.fetchStyles(data.styles);                                                  }
                                                   if (data.products.length > 0) {
                                                     products = products.concat(data.products);
                                                     page += 1;
@@ -497,26 +514,6 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                   } else {
                                                     scrollActive = false;
                                                     searching = false;
-                                                  }
-                                                  if (data.colors && data.colors.length > 0) {
-                                                    Colors.fetchColors();
-                                                    Colors.addCount(data.colors);
-                                                  }
-                                                  if (data.categories && data.categories.length > 0) {
-                                                    Categories.fetchCategories();
-                                                    Categories.addCount(data.categories);
-                                                  }
-                                                  if (data.materials && data.materials.length > 0) {
-                                                    Materials.fetchMaterials();
-                                                    Materials.addCount(data.materials);
-                                                  }
-                                                  if (data.brands && data.brands.length > 0) {
-                                                    Brands.fetchBrands();
-                                                    Brands.addCount(data.brands);
-                                                  }
-                                                  if (data.styles && data.styles.length > 0) {
-                                                    Styles.fetchStyles();
-                                                    Styles.addCount(data.styles);
                                                   }
        
       });
@@ -543,8 +540,8 @@ app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
                                                     .success(function(data){
                                                       moreLikeThis = [];
                                                       moreLikeThis = moreLikeThis.concat(data);
-                                                      moreLikeThis = _.reject(moreLikeThis, {'id': item.id})
-                                                      $rootScope.$broadcast('moreLikeThisLoaded')
+                                                      moreLikeThis = _.reject(moreLikeThis, {'id': item.id});
+                                                      $rootScope.$broadcast('moreLikeThisLoaded');
                                                     });
     }
   };
@@ -554,10 +551,11 @@ app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
   var o = {};
   o.brands = [];
   o.loaded = false;
-  o.fetchBrands = function(){
+  o.fetchBrands = function(dataHolder){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
-      if (!o.loaded) {$rootScope.$broadcast('brandsLoaded'); o.loaded = true;}      
+      if (!o.loaded) {$rootScope.$broadcast('brandsLoaded'); o.loaded = true;}
+      if (!!dataHolder) {$rootScope.$broadcast('brandsReceived', dataHolder);}     
     });
   };
 
