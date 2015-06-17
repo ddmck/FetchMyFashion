@@ -196,7 +196,7 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
     if (Products.scrollActive() === true) {
       ga('send', 'event', 'products', 'viewPage', Products.currentPage());
       Products.setScrollActive(false);
-      Products.fetchProducts()
+      Products.fetchProducts();
     }
   };
 
@@ -242,8 +242,11 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     $scope.myCats = [{id: 0, displayName: "All"}].concat(Categories.list());
   });
 
+  $rootScope.$on("categoriesReceived", function(event, array){
+    Categories.addCount(array);
+  });
 
-  $scope.categories = Categories
+  $scope.categories = Categories;
 
   $scope.myConfig = {
       create: false,
@@ -256,7 +259,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
     };
 
   $scope.setCategory = function(cat_id){
-    if (cat_id === undefined || cat_id == 0) {
+    if (cat_id === undefined || cat_id === 0) {
       changed = Filters.removeFilter("category");
     } else {
       changed = Filters.setFilter("category", parseInt(cat_id));
@@ -302,13 +305,17 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
   };
 }]);
 
-app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', function($scope, Filters, Products, Categories, Styles){
+app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', '$rootScope', function($scope, Filters, Products, Categories, Styles, $rootScope){
   var changed;
   $scope.styleId = Filters.getFilters().style;
-  //Styles.fetchStyles();
+  Styles.fetchStyles();
   $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
   $scope.$on("stylesLoaded", function(){
     $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
+  });
+
+  $rootScope.$on("stylesReceived", function(event, array){
+    Styles.addCount(array);
   });
 
   $scope.styles = Styles;
@@ -338,13 +345,17 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   };
 }]);
 
-app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
+app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', '$rootScope', function($scope, Filters, Products, Colors, $rootScope){
   var changed;
+  Colors.fetchColors();
   $scope.colorId = Filters.getFilters().color;
-  //Colors.fetchColors();
   $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
     $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
+  });
+
+  $rootScope.$on("colorsReceived", function(event, array){
+    Colors.addCount(array);
   });
 
   $scope.colors = Colors;
@@ -371,15 +382,19 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
   };
 }]);
 
-app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
+app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', '$rootScope', function($scope, Filters, Products, Brands, $http, $rootScope){
   var changed;
   $scope.brandId = Filters.getFilters().brand;
 
-  //Brands.fetchBrands();
+  Brands.fetchBrands();
   $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
     $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
+  });
+
+  $rootScope.$on("brandsReceived", function(event, array){
+    Brands.addCount(array);
   });
 
   $scope.brands = Brands;
@@ -515,15 +530,19 @@ app.controller('OrdersController', ['$scope', 'Orders', function($scope, Orders)
   $scope.orders = Orders;
 }]);
 
-app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', function($scope, Filters, Products, Materials){
+app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', '$rootScope', function($scope, Filters, Products, Materials, $rootScope){
   
   $scope.materials = [];
-  //Materials.fetchMaterials();
+  Materials.fetchMaterials();
   $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list());
   $scope.filters = Filters;
 
   $scope.$on("materialsLoaded", function(){
     $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list())
+  });
+
+  $rootScope.$on("materialsReceived", function(event, array){
+    Materials.addCount(array);
   });
 
   $scope.myConfig = {
