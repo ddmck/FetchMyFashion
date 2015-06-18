@@ -70,6 +70,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'UserAdminController',
     })
 
+    .state('admin.signIn', {
+      url: '/sign-in',
+      templateUrl: assetsUrl + 'partials/admin-sign-in.html',
+      controller: 'AdminController'
+    })
+
     .state('basket', {
       url: '/basket',
       templateUrl: assetsUrl + 'partials/basket.html',
@@ -461,6 +467,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
   // catch all route
   // send users to the form page
   $urlRouterProvider
+    .when('/admin', 'admin/new')
     .when('/products', 'products/new')
     .when('/account', 'account/sign-in')
     .when('/pay', 'pay/you')
