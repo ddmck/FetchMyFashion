@@ -49,8 +49,24 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   };
 }]);
 
-app.controller('DashboardAdminController', ['$scope', function($scope){
+app.controller('DashboardAdminController', ['$scope', '$auth', function($scope, $auth){
 
+  $scope.handleRegBtnClick = function() {
+    $auth.submitRegistration($scope.registrationForm, {config: 'admin'})
+      .then(function(resp) {
+        console.log("Worked");
+      })
+      .catch(function(resp) { 
+        console.log("Error");
+      });
+    };
+
+  $scope.buttonClick = function() {
+    $scope.submitted = true;
+    if ($scope.registration.$valid){
+      $scope.handleRegBtnClick();
+    }
+  };
 }]);
 
 app.controller('UserAdminController', ['$scope', function($scope){
