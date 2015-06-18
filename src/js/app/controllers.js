@@ -19,7 +19,7 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
-        
+
       })
       .catch(function(resp) { 
        //$scope.error = resp;
@@ -47,6 +47,14 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
     $localStorage.$reset();
     $state.go('account.signIn');
   };
+}]);
+
+app.controller('DashboardAdminController', ['$scope', function($scope){
+
+}]);
+
+app.controller('UserAdminController', ['$scope', function($scope){
+
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
