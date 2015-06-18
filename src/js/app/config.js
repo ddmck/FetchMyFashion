@@ -58,10 +58,10 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       }
     })
 
-    .state('admin.dashboard', {
-      url: '/dashboard',
-      templateUrl: assetsUrl + 'partials/dashboard.html',
-      controller: 'DashboardAdminController',
+    .state('admin.new', {
+      url: '/new',
+      templateUrl: assetsUrl + 'partials/admin-new.html',
+      controller: 'AdminController',
     })
 
     .state('admin.users', {
@@ -454,7 +454,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       onEnter: function(){
         window.scrollTo(0,0);
       }
-    })
+    });
 
 
 
@@ -495,11 +495,11 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 
   $locationProvider.html5Mode(true);
   $locationProvider.hashPrefix('!');
-})
+});
 
 app.run(function($rootScope, $location, Meta) {
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());
   });
-})
+});
