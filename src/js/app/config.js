@@ -49,6 +49,26 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         }
       }
     })
+    
+    .state('admin', {
+      url: '/admin',
+      templateUrl: assetsUrl + 'partials/admin.html',
+      onEnter: function(Admin){
+        Admin.validateAdmin();
+      }
+    })
+
+    .state('admin.dashboard', {
+      url: '/dashboard',
+      templateUrl: assetsUrl + 'partials/dashboard.html',
+      controller: 'DashboardAdminController',
+    })
+
+    .state('admin.users', {
+      url: '/users',
+      templateUrl: assetsUrl + 'partials/users.html',
+      controller: 'UserAdminController',
+    })
 
     .state('basket', {
       url: '/basket',
