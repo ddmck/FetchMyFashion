@@ -47,6 +47,22 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 }]);
 
 
+app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state){
+  return {
+    validateAdmin: function(){
+      $auth.validateUser()
+      .then(function(resp){
+        if (!resp.admin){
+          $state.go('welcome');
+        }
+      })
+      .catch(function(resp){
+        $state.go('account.signIn');
+      });
+    },
+  };
+}]);
+
 app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   var loaded = false;
