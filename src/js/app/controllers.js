@@ -67,6 +67,16 @@ app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
       $scope.handleRegBtnClick();
     }
   };
+
+  $scope.handleLoginBtnClick = function() {
+  $auth.submitLogin($scope.loginForm, {config: 'admin'})
+    .then(function(resp) {
+
+    })
+    .catch(function(resp) {
+      
+    });
+  };
 }]);
 
 app.controller('UserAdminController', ['$scope', function($scope){
