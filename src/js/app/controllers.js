@@ -49,7 +49,7 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   };
 }]);
 
-app.controller('DashboardAdminController', ['$scope', '$auth', function($scope, $auth){
+app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
 
   $scope.handleRegBtnClick = function() {
     $auth.submitRegistration($scope.registrationForm, {config: 'admin'})
