@@ -52,12 +52,14 @@ app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state
     validateAdmin: function(){
       $auth.validateUser()
       .then(function(resp){
-        if (!resp.admin){
+        if (!resp.configName || resp.configName != "admin"){
           $state.go('welcome');
+        } else if ($state.$current == 'admin') {
+          $state.go('admin.new');
         }
       })
       .catch(function(resp){
-        $state.go('account.signIn');
+        $state.go('admin.signIn');
       });
     },
   };
