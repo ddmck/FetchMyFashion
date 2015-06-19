@@ -39,10 +39,17 @@ app.factory('Users', ['$http', function($http){
       $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
         users = data;
         console.log(data);
+        console.log(page);
       });
     },
     list: function(){
       return users;
+    },
+    increment: function(){
+      page++;
+    },
+    decrement: function(){
+      page--;
     }
   };
 }]);
