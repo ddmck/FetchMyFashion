@@ -1,23 +1,16 @@
-<div ng-repeat="user in users.list()">
-	{{user.name}} -- {{user.email}}
-<!--   <div class="card-image">
-    <a ui-sref="productDetail({productID: product.id, slug: product.slug})">
-      <img ng-src="{{product.image_url}}" alt="{{product.name + ' by ' + product.brand_name}}">
-    </a>
-    <a class="save-button" ng-click="products.addToWishlist(product)"><span ng-show="!products.checkIfWishedFor(product.id)">Save</span><span ng-show="products.checkIfWishedFor(product.id)">Saved</span></a>
-  </div>
-  <div class="card-header">
-    {{ product.brand_name }}
-  </div>
-  <div class="card-copy">
-    <a ui-sref="productDetail({productID: product.id, slug: product.slug})">
-      <p ng-bind-html="product.name"></p>
-    </a>
-  </div>
-  <div class="card-stats">
-    <ul>
-      <li>{{ product.display_price | currency : '£' }}</li>
-    </ul>
-  </div> -->
-</div>
+	<div class="cards">
+		<div class="card" ng-repeat="user in users.list()">
+			<div class="card-image">
+				<div class="card-header">
+					{{ user.email }}
+				</div>
+				<div class="card-copy">
+					Name: {{ user.name }}
+				</div>
+				<div class="card-stats">
+					ID: {{ user.id }}
+				</div>
+			</div>
+		</div>
+	</div>
 </span>
