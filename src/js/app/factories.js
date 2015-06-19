@@ -31,6 +31,19 @@ app.factory('Filters', ['$location', function($location){
   };
 }]);
 
+app.factory('Users', ['$http', function($http){
+  var users = [];
+  var page = 1;
+  return{
+    fetchUsers: function(){
+      $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
+        users = data;
+        console.log(data);
+      });
+    }
+  };
+}]);
+
 
 app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products, Filters){
   var trends = [];
