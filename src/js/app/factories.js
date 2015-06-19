@@ -40,6 +40,9 @@ app.factory('Users', ['$http', function($http){
         users = data;
         console.log(data);
       });
+    },
+    list: function(){
+      return users;
     }
   };
 }]);
