@@ -81,6 +81,7 @@ app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
 
 app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
   Users.fetchUsers();
+  $scope.users = Users;
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
