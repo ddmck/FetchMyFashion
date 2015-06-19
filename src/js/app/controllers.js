@@ -74,13 +74,13 @@ app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
 
     })
     .catch(function(resp) {
-      
+
     });
   };
 }]);
 
-app.controller('UserAdminController', ['$scope', function($scope){
-
+app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
+  Users.fetchUsers();
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
