@@ -38,8 +38,6 @@ app.factory('Users', ['$http', function($http){
     fetchUsers: function(){
       $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
         users = data;
-        console.log(data);
-        console.log(page);
       });
     },
     list: function(){
