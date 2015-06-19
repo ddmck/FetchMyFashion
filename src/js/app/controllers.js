@@ -82,6 +82,16 @@ app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
 app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
   Users.fetchUsers();
   $scope.users = Users;
+
+  $scope.incrementPage = function() {
+    $scope.users.increment();
+    $scope.users.fetchUsers();
+  };
+
+  $scope.decrementPage = function() {
+    $scope.users.decrement();
+    $scope.users.fetchUsers();
+  };
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
