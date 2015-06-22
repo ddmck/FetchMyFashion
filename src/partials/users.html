@@ -2,15 +2,17 @@
 	<div class="cards">
 		<div class="card" ng-repeat="user in users.list()">
 			<div class="card-image">
-				<div class="card-header">
-					{{ user.email }}
-				</div>
-				<div class="card-copy">
-					Name: {{ user.name }}
-				</div>
-				<div class="card-stats">
-					ID: {{ user.id }}
-				</div>
+				<a ui-sref="userDetail({userID: user.id})">
+					<div class="card-header">
+						{{ user.email }}
+					</div>
+					<div class="card-copy">
+						Name: {{ user.name }}
+					</div>
+					<div class="card-stats">
+						ID: {{ user.id }}
+					</div>
+				</a>
 			</div>
 		</div>
 	</div>
