@@ -70,6 +70,18 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'UserAdminController',
     })
 
+    .state('admin.logOut', {
+      url: '/logOut',
+      templateUrl: assetsUrl + 'partials/admin-logOut.html',
+      controller: function($scope, $localStorage, $state){
+        $scope.signOutClick = function() {
+          $scope.signOut();
+          $localStorage.$reset();
+          $state.go('account.signIn');
+        };
+      }
+    })
+
     .state('admin.signIn', {
       url: '/sign-in',
       templateUrl: assetsUrl + 'partials/admin-sign-in.html',
