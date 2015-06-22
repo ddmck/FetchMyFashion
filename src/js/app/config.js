@@ -70,6 +70,17 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'UserAdminController',
     })
 
+    .state('userDetail', {
+      url: '/users/{userID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/user-detail.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
     .state('admin.logOut', {
       url: '/logOut',
       templateUrl: assetsUrl + 'partials/admin-logOut.html',
