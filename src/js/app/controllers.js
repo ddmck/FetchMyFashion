@@ -94,13 +94,15 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', function($scope, Users, $stateParams, $http){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', function($scope, Users, $stateParams, $http, $state){
   $scope.id = $stateParams.userID;
 
-  $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
-    $scope.userToEdit = data;
-    console.log($scope.userToEdit);
-  });
+  if ($state.current.name == "userDetail"){
+    $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
+      $scope.userToEdit = data;
+      console.log($scope.userToEdit);
+    });
+  }
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
