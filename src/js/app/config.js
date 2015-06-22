@@ -81,6 +81,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserDetailAdminController"
     })
 
+    .state('editUser', {
+      url: '/users/editUser',
+      templateUrl: assetsUrl + 'partials/edit-user.html',
+      controller: "UserDetailAdminController"
+    })
+
     .state('admin.logOut', {
       url: '/logOut',
       templateUrl: assetsUrl + 'partials/admin-logOut.html',
