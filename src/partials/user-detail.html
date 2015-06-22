@@ -1,4 +1,13 @@
 <div class="content">
-  {{userToEdit.name}}<br>
-  {{userToEdit.email}}
+  <section class="row centered">
+    <b>ID:</b> {{userToEdit.id}}</br>
+    <b>Name:</b> {{userToEdit.name}}</br>
+    <b>Email:</b> {{userToEdit.email}}</br>
+    <b>Provider:</b> {{userToEdit.provider}}
+  </section>
+  <section class="row">
+    <button ui-sref="editUser(userToEdit)">
+      Edit Details
+    </button>
+  </section>
 </div>
