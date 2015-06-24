@@ -84,11 +84,14 @@ app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state
         $state.go('admin.signIn');
       });
     },
-    fetchMessages: function(customerId, userId){
-      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId, adminId: userId}})
+    fetchMessages: function(customerId){
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{senderId: customerId}})
         .success(function(data){
-          console.log(data);
+          messages = data;
         });
+    },
+    listMessages: function(){
+      return messages;
     }
   };
 }]);
