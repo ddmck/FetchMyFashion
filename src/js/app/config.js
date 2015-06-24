@@ -70,7 +70,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'UserAdminController',
     })
 
-    .state('userDetail', {
+    .state('admin.userDetail', {
       url: '/users/{userID:[0-9]+}',
       templateUrl: assetsUrl + 'partials/user-detail.html',
       onEnter: function($stateParams, $state){
@@ -524,6 +524,13 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       tokenValidationPath:   '/admin_auth/validate_token',
       authProviderPaths: {
         facebook:  '/admin_auth/facebook'
+      },
+      tokenFormat: {
+        "access-token": "{{ token }}",
+        "token-type":   "Bearer",
+        "client":       "{{ clientId }}",
+        "expiry":       "{{ expiry }}",
+        "uid":          "{{ uid }}"
       }
     }
   }

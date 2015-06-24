@@ -63,16 +63,51 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       }
     })
 
-    .state('admin.dashboard', {
-      url: '/dashboard',
-      templateUrl: assetsUrl + 'partials/dashboard.html',
-      controller: 'DashboardAdminController',
+    .state('admin.new', {
+      url: '/new',
+      templateUrl: assetsUrl + 'partials/admin-new.html',
+      controller: 'AdminController',
     })
 
     .state('admin.users', {
       url: '/users',
       templateUrl: assetsUrl + 'partials/users.html',
       controller: 'UserAdminController',
+    })
+
+    .state('admin.userDetail', {
+      url: '/users/{userID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/user-detail.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
+    .state('editUser', {
+      url: '/users/editUser',
+      templateUrl: assetsUrl + 'partials/edit-user.html',
+      controller: "UserDetailAdminController"
+    })
+
+    .state('admin.logOut', {
+      url: '/logOut',
+      templateUrl: assetsUrl + 'partials/admin-logOut.html',
+      controller: function($scope, $localStorage, $state){
+        $scope.signOutClick = function() {
+          $scope.signOut();
+          $localStorage.$reset();
+          $state.go('account.signIn');
+        };
+      }
+    })
+
+    .state('admin.signIn', {
+      url: '/sign-in',
+      templateUrl: assetsUrl + 'partials/admin-sign-in.html',
+      controller: 'AdminController'
     })
 
     .state('basket', {
@@ -459,13 +494,14 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       onEnter: function(){
         window.scrollTo(0,0);
       }
-    })
+    });
 
 
 
   // catch all route
   // send users to the form page
   $urlRouterProvider
+    .when('/admin', 'admin/new')
     .when('/products', 'products/new')
     .when('/account', 'account/sign-in')
     .when('/pay', 'pay/you')
@@ -493,6 +529,13 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       tokenValidationPath:   '/admin_auth/validate_token',
       authProviderPaths: {
         facebook:  '/admin_auth/facebook'
+      },
+      tokenFormat: {
+        "access-token": "{{ token }}",
+        "token-type":   "Bearer",
+        "client":       "{{ clientId }}",
+        "expiry":       "{{ expiry }}",
+        "uid":          "{{ uid }}"
       }
     }
   }
@@ -500,14 +543,14 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 
   $locationProvider.html5Mode(true);
   $locationProvider.hashPrefix('!');
-})
+});
 
 app.run(function($rootScope, $location, Meta) {
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());
   });
-})
+});
 
 app.directive('ngNavBar', function(){
   return {
@@ -926,6 +969,27 @@ app.factory('Filters', ['$location', function($location){
   };
 }]);
 
+app.factory('Users', ['$http', function($http){
+  var users = [];
+  var page = 1;
+  return{
+    fetchUsers: function(){
+      $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
+        users = data;
+      });
+    },
+    list: function(){
+      return users;
+    },
+    increment: function(){
+      page++;
+    },
+    decrement: function(){
+      page--;
+    }
+  };
+}]);
+
 
 app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products, Filters){
   var trends = [];
@@ -943,18 +1007,27 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 
 
 app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state){
+  var messages = [];
   return {
     validateAdmin: function(){
       $auth.validateUser()
       .then(function(resp){
-        if (!resp.admin){
+        if (!resp.configName || resp.configName != "admin"){
           $state.go('welcome');
+        } else if ($state.$current == 'admin') {
+          $state.go('admin.new');
         }
       })
       .catch(function(resp){
-        $state.go('account.signIn');
+        $state.go('admin.signIn');
       });
     },
+    fetchMessages: function(customerId, userId){
+      $http.get(backendUrl + 'messages.json', {async: true, params:{id: customerId, adminId: userId}})
+        .success(function(data){
+          console.log(data);
+        });
+    }
   };
 }]);
 
@@ -1571,12 +1644,60 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   };
 }]);
 
-app.controller('DashboardAdminController', ['$scope', function($scope){
+app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
 
+  $scope.handleRegBtnClick = function() {
+    $auth.submitRegistration($scope.registrationForm, {config: 'admin'})
+      .then(function(resp) {
+        console.log("Worked");
+      })
+      .catch(function(resp) { 
+        console.log("Error");
+      });
+    };
+
+  $scope.buttonClick = function() {
+    $scope.submitted = true;
+    if ($scope.registration.$valid){
+      $scope.handleRegBtnClick();
+    }
+  };
+
+  $scope.handleLoginBtnClick = function() {
+  $auth.submitLogin($scope.loginForm, {config: 'admin'})
+    .then(function(resp) {
+
+    })
+    .catch(function(resp) {
+
+    });
+  };
 }]);
 
-app.controller('UserAdminController', ['$scope', function($scope){
+app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
+  Users.fetchUsers();
+  $scope.users = Users;
 
+  $scope.incrementPage = function() {
+    $scope.users.increment();
+    $scope.users.fetchUsers();
+  };
+
+  $scope.decrementPage = function() {
+    $scope.users.decrement();
+    $scope.users.fetchUsers();
+  };
+}]);
+
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', function($scope, Users, $stateParams, $http, $state){
+  $scope.id = $stateParams.userID;
+
+  if ($state.current.name == "userDetail"){
+    $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
+      $scope.userToEdit = data;
+      console.log($scope.userToEdit);
+    });
+  }
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
