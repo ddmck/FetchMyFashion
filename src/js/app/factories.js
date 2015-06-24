@@ -69,6 +69,7 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 
 
 app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state){
+  var messages = [];
   return {
     validateAdmin: function(){
       $auth.validateUser()
@@ -83,6 +84,12 @@ app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state
         $state.go('admin.signIn');
       });
     },
+    fetchMessages: function(customerId, userId){
+      $http.get(backendUrl + 'messages.json', {async: true, params:{id: customerId, adminId: userId}})
+        .success(function(data){
+          console.log(data);
+        });
+    }
   };
 }]);
 
