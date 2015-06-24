@@ -36,7 +36,7 @@ app.factory('Users', ['$http', function($http){
   var page = 1;
   return{
     fetchUsers: function(){
-      $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
+      $http.get(backendUrl + 'api/users.json', {async: true, params:{page: page}}).success(function(data){
         users = data;
       });
     },
@@ -85,7 +85,7 @@ app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state
       });
     },
     fetchMessages: function(customerId, userId){
-      $http.get(backendUrl + 'messages.json', {async: true, params:{id: customerId, adminId: userId}})
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId, adminId: userId}})
         .success(function(data){
           console.log(data);
         });
