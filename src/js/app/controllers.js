@@ -98,7 +98,7 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
   $scope.id = $stateParams.userID;
 
   if ($state.current.name == "admin.userDetail"){
-    $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
+    $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
       $scope.userToEdit = data;
     });
     Admin.fetchMessages($scope.id, $scope.user.id);
