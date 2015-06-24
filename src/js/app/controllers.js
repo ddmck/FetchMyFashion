@@ -96,12 +96,13 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
 
 app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', function($scope, Users, $stateParams, $http, $state, Admin){
   $scope.id = $stateParams.userID;
+  $scope.admin = Admin;
 
   if ($state.current.name == "admin.userDetail"){
     $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
       $scope.userToEdit = data;
     });
-    Admin.fetchMessages($scope.id, $scope.user.id);
+    Admin.fetchMessages($scope.id);
   }
 }]);
 
