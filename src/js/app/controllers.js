@@ -94,9 +94,13 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', function($scope, Users, $stateParams, $http, $state, Admin){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
+
+  $rootScope.$on('newMessage', function(){
+    Admin.fetchMessages($scope.id);
+  });
 
   if ($state.current.name == "admin.userDetail"){
     $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
@@ -104,6 +108,10 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
     });
     Admin.fetchMessages($scope.id);
   }
+
+  $scope.sendMessage = function(messageText) {
+    Admin.sendMessage($scope.user.id, $scope.id, messageText);
+  };
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
