@@ -9,9 +9,9 @@
     <div class="" ng-repeat="message in admin.listMessages()">
       <b>{{message.sender_name}}:</b> {{message.text}}
     </div>
-    <form ng-submit="sendMessage()">
-        <input type="text" ng-model="messageText" placeholder="Type your message here" />
-        <input type="submit" value="Send" />
+    <form ng-submit="sendMessage(messageText)">
+      <input type="text" ng-model="messageText" placeholder="Type your message here" />
+      <input type="submit" value="Send" />
     </form>
   </section>
   <section class="row">
