@@ -964,8 +964,8 @@ app.factory('Filters', ['$location', function($location){
       } else if (lastResetFrom !== $location.absUrl()) {
         filters = {gender: filters.gender};
         lastResetFrom = $location.absUrl();
-      } 
-    }         
+      }
+    }
   };
 }]);
 
@@ -974,7 +974,7 @@ app.factory('Users', ['$http', function($http){
   var page = 1;
   return{
     fetchUsers: function(){
-      $http.get(backendUrl + 'users.json', {async: true, params:{page: page}}).success(function(data){
+      $http.get(backendUrl + 'api/users.json', {async: true, params:{page: page}}).success(function(data){
         users = data;
       });
     },
@@ -1006,7 +1006,7 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
 }]);
 
 
-app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state){
+app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http, $auth, $state, $rootScope){
   var messages = [];
   return {
     validateAdmin: function(){
@@ -1022,10 +1022,19 @@ app.factory('Admin', [ '$http', '$auth', '$state', function($http, $auth, $state
         $state.go('admin.signIn');
       });
     },
-    fetchMessages: function(customerId, userId){
-      $http.get(backendUrl + 'messages.json', {async: true, params:{id: customerId, adminId: userId}})
+    fetchMessages: function(customerId){
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId}})
         .success(function(data){
-          console.log(data);
+          messages = data;
+        });
+    },
+    listMessages: function(){
+      return messages;
+    },
+    sendMessage: function(adminId, customerId, content){
+      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{admin_id: adminId, user_id: customerId, text: content, seen: false}})
+        .success(function(data){
+          $rootScope.$broadcast('newMessage');
         });
     }
   };
@@ -1185,21 +1194,21 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
         holdingArr.push(delivery);
       }
       $localStorage.deliveries = holdingArr;
-    }, 
+    },
     reset: function(){
       $localStorage.deliveries = [];
     },
     total: function(){
       if ($localStorage.deliveries.length > 0) {
         var total = 0;
-         _.forEach($localStorage.deliveries, function(n) { 
-          total += n.price; 
+         _.forEach($localStorage.deliveries, function(n) {
+          total += n.price;
         });
         return total;
       } else {
         return 0;
       }
-      
+
     }
   };
 }]);
@@ -1211,7 +1220,7 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
-        $rootScope.$broadcast('subCatsLoaded'); 
+        $rootScope.$broadcast('subCatsLoaded');
       });
     },
     list: function(){
@@ -1306,18 +1315,18 @@ app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localS
       return !(ans === undefined);
     },
     addToWishlistItems: function(product){
-      
+
       var wli = _.find(wishlistItems, function(wl){
         return wl.product.id === product.id;
       })
       if ( wli === undefined ) {
         $http.post(backendUrl + 'api/wishlist_items.json', {async: true, params: {
-                                                                              product_id: product.id 
+                                                                              product_id: product.id
                                                                               }})
           .success(function(data){
             wishlistItems.push(data)
           });
-        
+
       } else {
 
         $http.delete(backendUrl + 'api/wishlist_items/' + wli.id + '.json', {async: true})
@@ -1351,7 +1360,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       _.forEach(basketItems, function(item){
         $http.get(backendUrl + 'products/' + item.productId + '.json').success(function(data){
           data.selectedSize = item.sizeName;
-          products.push(data); 
+          products.push(data);
         });
       });
     },
@@ -1373,9 +1382,9 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
     },
     addToBasketItems: function(product){
       var basketItems = $localStorage.basketItems;
-      var productWithSize = { 
+      var productWithSize = {
         productId: product.id,
-        sizeName: product.selectedSize.name 
+        sizeName: product.selectedSize.name
       }
       basketItems.push(productWithSize);
       $localStorage.basketItems = basketItems;
@@ -1388,8 +1397,8 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       $localStorage.basketItems = basketItems;
       products = _.reject(products, function(p){
         return p === product;
-      })   
-    }, 
+      })
+    },
     inBasketItems: function(productID){
       return _.some(products, { 'id': productID });
     }
@@ -1457,13 +1466,13 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
     },
     fetchProducts: function(){
       searching = true;
-      $http.get(backendUrl + 'products.json', { async: true, 
+      $http.get(backendUrl + 'products.json', { async: true,
                                                 params: {
-                                                  page: page.toString(), 
+                                                  page: page.toString(),
                                                   filters: {
                                                     gender_id: Filters.getFilters().gender,
-                                                    brand_id: Filters.getFilters().brand, 
-                                                    category_id: Filters.getFilters().category, 
+                                                    brand_id: Filters.getFilters().brand,
+                                                    category_id: Filters.getFilters().category,
                                                     sub_category_id: Filters.getFilters().subCategory,
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
@@ -1471,10 +1480,10 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     brand_id: Filters.getFilters().brand,
                                                     out_of_stock: false,
                                                     has_sizes: true
-                                                  }, 
-                                                  sort: Filters.getFilters().sort, 
+                                                  },
+                                                  sort: Filters.getFilters().sort,
                                                   search_string: Filters.getFilters().searchString
-                                                  
+
                                                 }}).success(function(data){
                                                   if (data.colors && data.colors.length > 0) {
                                                     Colors.fetchColors(data.colors);
@@ -1499,7 +1508,7 @@ app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$
                                                     scrollActive = false;
                                                     searching = false;
                                                   }
-       
+
       });
     },
     currentlySearching: function(){
@@ -1516,10 +1525,10 @@ app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
     },
     fetchMoreLikeThis: function(item){
       searching = true;
-      $http.get(backendUrl + 'more_like_this.json', { async: true, 
+      $http.get(backendUrl + 'more_like_this.json', { async: true,
                                                       params: {
                                                         id: item.id
-                                                      } 
+                                                      }
                                                     })
                                                     .success(function(data){
                                                       moreLikeThis = [];
@@ -1539,7 +1548,7 @@ app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
       if (!o.loaded) {$rootScope.$broadcast('brandsLoaded'); o.loaded = true;}
-      if (!!dataHolder) {$rootScope.$broadcast('brandsReceived', dataHolder);}     
+      if (!!dataHolder) {$rootScope.$broadcast('brandsReceived', dataHolder);}
     });
   };
 
@@ -1614,7 +1623,7 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
-
+        console.log(resp);
       })
       .catch(function(resp) { 
        //$scope.error = resp;
@@ -1689,15 +1698,24 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', function($scope, Users, $stateParams, $http, $state){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope){
   $scope.id = $stateParams.userID;
+  $scope.admin = Admin;
 
-  if ($state.current.name == "userDetail"){
-    $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
+  $rootScope.$on('newMessage', function(){
+    Admin.fetchMessages($scope.id);
+  });
+
+  if ($state.current.name == "admin.userDetail"){
+    $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
       $scope.userToEdit = data;
-      console.log($scope.userToEdit);
     });
+    Admin.fetchMessages($scope.id);
   }
+
+  $scope.sendMessage = function(messageText) {
+    Admin.sendMessage($scope.user.id, $scope.id, messageText);
+  };
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
