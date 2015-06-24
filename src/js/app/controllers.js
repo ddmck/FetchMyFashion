@@ -19,7 +19,7 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
-
+        console.log(resp);
       })
       .catch(function(resp) { 
        //$scope.error = resp;
@@ -94,14 +94,14 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', function($scope, Users, $stateParams, $http, $state){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', function($scope, Users, $stateParams, $http, $state, Admin){
   $scope.id = $stateParams.userID;
 
-  if ($state.current.name == "userDetail"){
+  if ($state.current.name == "admin.userDetail"){
     $http.get(backendUrl + 'users/' + $scope.id + '.json', {async: true}).success(function(data){
       $scope.userToEdit = data;
-      console.log($scope.userToEdit);
     });
+    Admin.fetchMessages($scope.id, $scope.user.id);
   }
 }]);
 
