@@ -5,9 +5,10 @@
     <b>Email:</b> {{userToEdit.email}}</br>
     <b>Provider:</b> {{userToEdit.provider}}
   </section>
-  <section class="row centered">
+  <section class="row">
     <div class="" ng-repeat="message in admin.listMessages()">
-      <b>{{message.sender_name}}:</b> {{message.text}}
+      <p ng-class=" {{(message.sender_id == message.user_id) ? text-right: ''
+}}"><b>{{message.sender_name}}:</b> {{message.text}}</p>
     </div>
     <form ng-submit="sendMessage(messageText)">
       <input type="text" ng-model="messageText" placeholder="Type your message here" />
