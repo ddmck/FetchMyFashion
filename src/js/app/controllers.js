@@ -110,7 +110,7 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
   }
 
   $scope.sendMessage = function(messageText) {
-    Admin.sendMessage($scope.user.id, $scope.id, messageText);
+    Admin.sendMessage($scope.id, messageText);
   };
 }]);
 
