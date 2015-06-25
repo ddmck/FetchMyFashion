@@ -97,6 +97,7 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
 app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
+  $scope.recommendations = Recommendations;
   $scope.openChat = false;
   $scope.openRecommendations = false;
 
@@ -109,6 +110,7 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
       $scope.userToEdit = data;
     });
     Admin.fetchMessages($scope.id);
+    Recommendations.fetchRecommendations($scope.id);
   }
 
   $scope.sendMessage = function(messageText) {
@@ -137,6 +139,16 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
     }else{
       $scope.openRecommendations = !$scope.openRecommendations;
     }
+  };
+
+  $scope.handleUpdateAccountBtnClick = function() {
+    $auth.updateAccount($scope.updateAccountForm)
+      .then(function(resp) {
+        console.log(resp);
+      })
+      .catch(function(resp) { 
+        console.log(resp);
+      });
   };
 }]);
 

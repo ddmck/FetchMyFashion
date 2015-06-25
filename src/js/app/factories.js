@@ -113,6 +113,15 @@ app.factory('Recommendations', ['$http', '$state', function($http, $state){
         .success(function(data){
           $state.go('admin.users');
         });
+    },
+    fetchRecommendations: function(customerId){
+      $http.get(backendUrl + 'api/recommendations.json', {async: true, params:{id: customerId}})
+        .success(function(data){
+          recommendations = data;
+        });
+    },
+    list: function(){
+      return recommendations;
     }
   };
 }]);
