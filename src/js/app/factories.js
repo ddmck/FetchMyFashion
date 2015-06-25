@@ -105,6 +105,18 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
   };
 }]);
 
+app.factory('Recommendations', ['$http', '$state', function($http, $state){
+  var recommendations = [];
+  return {
+    createRecommendation: function(rec){
+      $http.post(backendUrl + 'recommendations.json', {asycn: true, recommendation: rec})
+        .success(function(data){
+          $state.go('admin.users');
+        });
+    }
+  };
+}]);
+
 app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
   var loaded = false;
