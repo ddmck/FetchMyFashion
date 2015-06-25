@@ -1,3 +1,34 @@
+.user-details {
+	text-align: center;
+	max-width: 25em;
+	float: left;
+	margin: 2.5em 5em 1em 5em;
+}
+
+.chat-container{
+	.feed{
+		background-color: white;
+		padding: 1em 1em 0.1em 1em;
+		margin: 0em 0em 0.5em 0em;
+	}
+}
+
+.button-holder {
+	float: left;
+	margin: 2em 5em 1em 5em;
+}
+
+.forum-container{
+	input[type="text"] {
+    max-width: 30em;
+    float: left;
+    margin: 0 1em 0 0;
+	}
+	input[type="submit"] {
+		float: left;
+	}
+}
+
 .centered {
   text-align: center;
 }
