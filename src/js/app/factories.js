@@ -93,8 +93,8 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
     listMessages: function(){
       return messages;
     },
-    sendMessage: function(adminId, customerId, content){
-      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{admin_id: adminId, user_id: customerId, text: content, seen: false}})
+    sendMessage: function(customerId, content){
+      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{user_id: customerId, text: content, seen: false}})
         .success(function(data){
           $rootScope.$broadcast('newMessage');
         });
