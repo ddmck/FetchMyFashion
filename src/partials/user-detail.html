@@ -17,7 +17,7 @@
       </button>
     </div>
     <div class="button-holder">
-      <button ui-sref="editUser(userToEdit)">
+      <button ui-sref="admin.editUser({userID: id})">
         Edit Details
       </button>
     </div>
@@ -37,6 +37,13 @@
           <input type="text" ng-model="messageText" placeholder="Type your message here" />
           <input type="submit" value="Send" />
         </form>
+      </div>
+    </div>
+  </section>
+  <section class="row" ng-show="openRecommendations">
+    <div class="chat-container">
+      <div class="feed" ng-repeat="recommendation in recommendations.list()">
+        <p>{{recommendation.product_id}} -- {{recommendation.title}} -- {{recommendation.description}}</p>
       </div>
     </div>
   </section>
