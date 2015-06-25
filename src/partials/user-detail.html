@@ -1,26 +1,43 @@
 <div class="content">
-  <section class="row centered">
-    <b>ID:</b> {{userToEdit.id}}</br>
-    <b>Name:</b> {{userToEdit.name}}</br>
-    <b>Email:</b> {{userToEdit.email}}</br>
-    <b>Provider:</b> {{userToEdit.provider}}
-  </section>
   <section class="row">
-    <div class="" ng-repeat="message in admin.listMessages()">
-      <p ng-class=" {{(message.sender_id == message.user_id) ? text-right: ''
-}}"><b>{{message.sender_name}}:</b> {{message.text}}</p>
+    <div class="user-details">
+      <b>ID:</b> {{userToEdit.id}}</br>
+      <b>Name:</b> {{userToEdit.name}}</br>
+      <b>Email:</b> {{userToEdit.email}}</br>
+      <b>Provider:</b> {{userToEdit.provider}}
     </div>
-    <form ng-submit="sendMessage(messageText)">
-      <input type="text" ng-model="messageText" placeholder="Type your message here" />
-      <input type="submit" value="Send" />
-    </form>
-  </section>
-  <section class="row">
-    <button ui-sref="editUser(userToEdit)">
-      Edit Details
-    </button>
+    <div class="button-holder">
+      <button ng-click="openC()">
+        Open Chat
+      </button>
+    </div>
+    <div class="button-holder">
+      <button ng-click="openR()">
+        List Recommendations
+      </button>
+    </div>
+    <div class="button-holder">
+      <button ui-sref="editUser(userToEdit)">
+        Edit Details
+      </button>
+    </div>
+    <div class="button-holder">
     <button ui-sref="admin.addRecommendation({userID: id})">
       Add Recommendation
     </button>
+    </div>
+  </section>
+  <section class="row" ng-show="openChat">
+    <div class="chat-container">
+      <div class="feed" ng-repeat="message in admin.listMessages()">
+        <p ng-class=" {{(message.sender_id == message.user_id) ? text-right: ''}}"><b>{{message.sender_name}}:</b> {{message.text}}</p>
+      </div>
+      <div class="forum-container">
+        <form ng-submit="sendMessage(messageText)">
+          <input type="text" ng-model="messageText" placeholder="Type your message here" />
+          <input type="submit" value="Send" />
+        </form>
+      </div>
+    </div>
   </section>
 </div>
