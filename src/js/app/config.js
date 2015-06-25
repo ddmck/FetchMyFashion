@@ -78,7 +78,10 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $state.go('admin.users');
         }
       },
-      controller: "UserDetailAdminController"
+      controller: "UserDetailAdminController",
+      onExit: function(Admin){
+        Admin.clearMessages();
+      }
     })
 
     .state('editUser', {
