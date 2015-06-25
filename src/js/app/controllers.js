@@ -97,6 +97,8 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
 app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
+  $scope.openChat = false;
+  $scope.openRecommendations = false;
 
   $rootScope.$on('newMessage', function(){
     Admin.fetchMessages($scope.id);
@@ -117,6 +119,24 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
     $scope.recommendation.sender_id = $scope.user.id;
     $scope.recommendation.product_id = $scope.recommendation.product_id.match(/\/\d+\-/)[0].slice(1, - 1);
     Recommendations.createRecommendation($scope.recommendation);
+  };
+
+  $scope.openC = function(){
+    if ($scope.openRecommendations === true){
+      $scope.openRecommendations = false;
+      $scope.openChat = !$scope.openChat;
+    }else{
+      $scope.openChat = !$scope.openChat;
+    }
+  };
+
+  $scope.openR = function(){
+    if ($scope.openChat === true){
+      $scope.openChat = false;
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }else{
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }
   };
 }]);
 
