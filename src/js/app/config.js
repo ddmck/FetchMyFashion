@@ -84,6 +84,17 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       }
     })
 
+    .state('admin.addRecommendation', {
+      url: '/users/{userID:[0-9]+}/addRecommendation',
+      templateUrl: assetsUrl + 'partials/recommendation.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
     .state('editUser', {
       url: '/users/editUser',
       templateUrl: assetsUrl + 'partials/edit-user.html',
