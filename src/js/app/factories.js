@@ -98,6 +98,9 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
         .success(function(data){
           $rootScope.$broadcast('newMessage');
         });
+    },
+    clearMessages: function(){
+      messages = [];
     }
   };
 }]);
