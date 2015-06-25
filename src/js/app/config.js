@@ -95,9 +95,14 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserDetailAdminController"
     })
 
-    .state('editUser', {
-      url: '/users/editUser',
+    .state('admin.editUser', {
+      url: '/users/{userID:[0-9]+}/editUser',
       templateUrl: assetsUrl + 'partials/edit-user.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
       controller: "UserDetailAdminController"
     })
 
