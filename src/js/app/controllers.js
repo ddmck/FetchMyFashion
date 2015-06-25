@@ -94,7 +94,7 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
 
@@ -111,6 +111,12 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
 
   $scope.sendMessage = function(messageText) {
     Admin.sendMessage($scope.id, messageText);
+  };
+
+  $scope.createRecommendation = function(){
+    $scope.recommendation.sender_id = $scope.user.id;
+    $scope.recommendation.product_id = $scope.recommendation.product_id.match(/\/\d+\-/)[0].slice(1, - 1);
+    Recommendations.createRecommendation($scope.recommendation);
   };
 }]);
 
