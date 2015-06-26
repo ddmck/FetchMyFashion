@@ -52,6 +52,22 @@ app.factory('Users', ['$http', function($http){
   };
 }]);
 
+app.factory('UserToEdit', ['$http', '$rootScope', function($http, $rootScope){
+  var user = [];
+  return{
+    fetchUser: function(id){
+      $http.get(backendUrl + 'api/users/' + id + '.json', {async: true})
+      .success(function(data){
+        user = data;
+        $rootScope.$broadcast('userToEditLoaded');
+      });
+    },
+    list: function(){
+      return user;
+    }
+  };
+}]);
+
 
 app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products, Filters){
   var trends = [];
