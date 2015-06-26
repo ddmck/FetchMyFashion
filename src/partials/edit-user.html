@@ -1,7 +1,7 @@
 <div class="content">
   <section class="row">
     <div class="form-container" ng-hide="result">
-      <form ng-submit="handleUpdateAccountBtnClick()" role="form" ng-init="updateAccountForm = userToEdit" novalidate>
+      <form ng-submit="handleUpdateAccountBtnClick()" role="form" ng-init="updateAccountForm = userToEdit.list()" novalidate>
         <div class="form-group">
           <label>Admin ID</label>
           <input type="text" name="text" ng-model="updateAccountForm.admin_id">
