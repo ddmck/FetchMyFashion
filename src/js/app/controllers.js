@@ -25,6 +25,15 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
        //$scope.error = resp;
       });
   };
+  $scope.handleFacebookBtnClick = function() {
+    $auth.authenticate('facebook')
+      .then(function(resp) {
+        
+      })
+      .catch(function(resp) {
+
+      })
+  };
 
   $scope.loginClick = function() {
     $scope.submit = true;
