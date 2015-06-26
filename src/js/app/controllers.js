@@ -94,10 +94,11 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', 'UserToEdit', '$auth', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations, UserToEdit, $auth){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
   $scope.recommendations = Recommendations;
+  $scope.userToEdit = UserToEdit;
   $scope.openChat = false;
   $scope.openRecommendations = false;
 
@@ -105,10 +106,12 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
     Admin.fetchMessages($scope.id);
   });
 
+  $rootScope.$on('userToEditLoaded', function(){
+    $scope.userToEdit = UserToEdit.list();
+  });
+
   if ($state.current.name == "admin.userDetail"){
-    $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
-      $scope.userToEdit = data;
-    });
+    UserToEdit.fetchUser($scope.id);
     Admin.fetchMessages($scope.id);
     Recommendations.fetchRecommendations($scope.id);
   }
@@ -142,7 +145,8 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
   };
 
   $scope.handleUpdateAccountBtnClick = function() {
-    $auth.updateAccount($scope.updateAccountForm)
+    console.log($scope.updateAccountForm);
+    $auth.updateAccount($scope.updateAccountForm, {config: 'user'})
       .then(function(resp) {
         console.log(resp);
       })
@@ -231,7 +235,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
 }]);
 
 app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', function($state, $scope, Trends, Filters){
-  $scope.trends = []
+  $scope.trends = [];
   Trends.fetchTrends();
   $scope.trends = Trends;
   $scope.trend = Trends.list();
