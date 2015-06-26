@@ -1,0 +1,21 @@
+<div class="content">
+  <section class="row centered">
+    <div class="form-container">
+      <form ng-submit="createRecommendation()" role="form" ng-init="recommendation.user_id = id" novalidate>
+        <div class="form-group">
+          <label>Product URL</label>
+          <input type="text" name="text" ng-model="recommendation.product_id">
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" name="text" ng-model="recommendation.title">
+        </div>
+        <div class="form-group">
+          <label>Description</label>  
+          <input type="text" name="text" ng-model="recommendation.description">
+        </div>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </section>
+</div>

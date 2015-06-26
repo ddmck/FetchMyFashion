@@ -1,0 +1,21 @@
+<span class="row">
+	<div class="cards">
+		<div class="card" ng-repeat="user in users.list()">
+			<div class="card-image">
+				<a ui-sref="admin.userDetail({userID: user.id})">
+					<div class="card-header">
+						{{ user.email }}
+					</div>
+					<div class="card-copy">
+						Name: {{ user.name }}
+					</div>
+					<div class="card-stats">
+						ID: {{ user.id }}
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+	<a class="save-button" ng-click="decrementPage()">Previous</a> -
+	<a class="save-button" ng-click="incrementPage()">Next</a>
+</span>

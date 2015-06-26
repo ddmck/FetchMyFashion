@@ -8,7 +8,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
   ]);
 
   $stateProvider
-  
+
     // route to show our landing page (/welcome)
     .state('welcome', {
       url: '/welcome',
@@ -21,9 +21,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         };
         $scope.wishlist = $localStorage.wishlistItems;
         var animationDelay = 2500;
- 
+
         animateHeadline($('.cd-headline'));
-         
+
         function animateHeadline($headlines) {
           $headlines.each(function(){
             var headline = $(this);
@@ -38,16 +38,90 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           switchWord($word, nextWord);
           setTimeout(function(){ hideWord(nextWord) }, animationDelay);
         }
-         
+
         function takeNext($word) {
           return (!$word.is(':last-child')) ? $word.next() : $word.parent().children().eq(0);
         }
-         
+
         function switchWord($oldWord, $newWord) {
           $oldWord.removeClass('is-visible').addClass('is-hidden');
           $newWord.removeClass('is-hidden').addClass('is-visible');
         }
       }
+    })
+
+    .state('admin', {
+      url: '/admin',
+      templateUrl: assetsUrl + 'partials/admin.html',
+      onEnter: function(Admin){
+        Admin.validateAdmin();
+      }
+    })
+
+    .state('admin.new', {
+      url: '/new',
+      templateUrl: assetsUrl + 'partials/admin-new.html',
+      controller: 'AdminController',
+    })
+
+    .state('admin.users', {
+      url: '/users',
+      templateUrl: assetsUrl + 'partials/users.html',
+      controller: 'UserAdminController',
+    })
+
+    .state('admin.userDetail', {
+      url: '/users/{userID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/user-detail.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController",
+      onExit: function(Admin){
+        Admin.clearMessages();
+      }
+    })
+
+    .state('admin.addRecommendation', {
+      url: '/users/{userID:[0-9]+}/addRecommendation',
+      templateUrl: assetsUrl + 'partials/recommendation.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
+    .state('admin.editUser', {
+      url: '/users/{userID:[0-9]+}/editUser',
+      templateUrl: assetsUrl + 'partials/edit-user.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
+    .state('admin.logOut', {
+      url: '/logOut',
+      templateUrl: assetsUrl + 'partials/admin-logOut.html',
+      controller: function($scope, $localStorage, $state){
+        $scope.signOutClick = function() {
+          $scope.signOut();
+          $localStorage.$reset();
+          $state.go('account.signIn');
+        };
+      }
+    })
+
+    .state('admin.signIn', {
+      url: '/sign-in',
+      templateUrl: assetsUrl + 'partials/admin-sign-in.html',
+      controller: 'AdminController'
     })
 
     .state('basket', {
@@ -101,7 +175,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.goToSignIn = function(){
           $localStorage.returnTo = "pay.address";
           $state.go("account.signIn");
-        }, 
+        },
         $scope.goToSignUp = function(){
           $localStorage.returnTo = "pay.address";
           $state.go("account.signUp");
@@ -114,7 +188,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 
     .state('pay.address', {
       url: '/address',
-      templateUrl: assetsUrl + 'partials/address.html', 
+      templateUrl: assetsUrl + 'partials/address.html',
       controller: function($scope, $state, $localStorage){
         $scope.localStorage = $localStorage;
         $scope.submitAddress = function(addressForm) {
@@ -137,7 +211,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             if(response.error.message) {
               $scope.billingForm.error = response.error.message;
             } else {
-              $scope.billingForm.error = response.error; 
+              $scope.billingForm.error = response.error;
             }
           } else {
             // got stripe token, now charge it or smt
@@ -160,7 +234,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/confirmation.html',
       controller: function($scope, $localStorage, $state, $http, Basket, Deliveries){
         $scope.basket = Basket;
-        $scope.deliveries = Deliveries;      
+        $scope.deliveries = Deliveries;
         Basket.fetchBasketItemProducts();
         $scope.localStorage = $localStorage;
         $scope.submitOrder = function(){
@@ -174,7 +248,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             $state.go("pay.confirmed");
             Basket.reset();
           });
-        } 
+        }
       },
       onEnter: function(){
         window.scrollTo(0,0);
@@ -278,7 +352,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             $scope.wishlist = WishlistItems;
             WishlistItems.fetchWishlistItemProducts();
           }
-          
+
         }
         var cb = callback()
         if ($auth.user.id) {
@@ -293,7 +367,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           authModal.activate()
 
         }
-        
+
         $scope.addToWishlist = function(product){
           WishlistItems.addToWishlistItems(product);
         };
@@ -434,33 +508,60 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       onEnter: function(){
         window.scrollTo(0,0);
       }
-    })
+    });
 
-    
-      
+
+
   // catch all route
-  // send users to the form page 
+  // send users to the form page
   $urlRouterProvider
+    .when('/admin', 'admin/new')
     .when('/products', 'products/new')
     .when('/account', 'account/sign-in')
     .when('/pay', 'pay/you')
     .otherwise('/welcome');
-  
-  $authProvider.configure({
+
+  $authProvider.configure([
+  {
+    default: {
       apiUrl: backendUrl + 'api',
       passwordResetSuccessUrl: window.location.protocol + '//' + window.location.host + '/account/password-reset',
       authProviderPaths: {
         facebook: '/auth/facebook'
       }
-  });
+    }
+  }, {
+    admin: {
+      apiUrl:                backendUrl + 'api',
+      signOutUrl:            '/admin_auth/sign_out',
+      emailSignInPath:       '/admin_auth/sign_in',
+      emailRegistrationPath: '/admin_auth',
+      accountUpdatePath:     '/admin_auth',
+      accountDeletePath:     '/admin_auth',
+      passwordResetPath:     '/admin_auth/password',
+      passwordUpdatePath:    '/admin_auth/password',
+      tokenValidationPath:   '/admin_auth/validate_token',
+      authProviderPaths: {
+        facebook:  '/admin_auth/facebook'
+      },
+      tokenFormat: {
+        "access-token": "{{ token }}",
+        "token-type":   "Bearer",
+        "client":       "{{ clientId }}",
+        "expiry":       "{{ expiry }}",
+        "uid":          "{{ uid }}"
+      }
+    }
+  }
+  ]);
 
   $locationProvider.html5Mode(true);
   $locationProvider.hashPrefix('!');
-})
+});
 
 app.run(function($rootScope, $location, Meta) {
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());
   });
-})
+});

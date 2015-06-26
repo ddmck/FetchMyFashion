@@ -1,0 +1,17 @@
+<section class="row">
+  <ul class="accordion-tabs">
+    <li class="tab-header-and-content">
+      <a href="javascript:void(0)" ui-sref-active="is-active" class="tab-link" ui-sref="admin.signIn" ng-hide="user.admin">Sign In</a>
+    </li>
+    <li class="tab-header-and-content">
+      <a href="javascript:void(0)" ui-sref-active="is-active"  class="tab-link" ui-sref="admin.new" ng-show="user.admin">New Admin</a>
+    </li>
+    <li class="tab-header-and-content">
+      <a href="javascript:void(0)" ui-sref-active="is-active" class="tab-link" ui-sref="admin.users" ng-show="user.admin">Users</a>
+    </li>
+    <li class="tab-header-and-content">
+      <a href="javascript:void(0)" ui-sref-active="is-active" class="tab-link" ui-sref="admin.logOut" ng-show="user.admin">Log out</a>
+    </li>
+    <div class="tab-content" ui-view></div>
+  </ul>
+</section>

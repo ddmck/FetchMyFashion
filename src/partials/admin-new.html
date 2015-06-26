@@ -1,0 +1,23 @@
+<form ng-submit="buttonClick()" role="form" name="registration" ng-init="registrationForm = {}" 
+	ng-controller="AdminController" novalidate>
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" name="name" ng-model="registrationForm.name" required="required" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" name="email" ng-model="registrationForm.email" required="required" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" ng-minlength="8" name="password" ng-model="registrationForm.password" required="required" class="form-control"/>
+  </div>
+
+  <div class="form-group">
+    <label>Password confirmation</label>
+    <input type="password" ng-minlength="8" name="password_confirmation" ng-model="registrationForm.password_confirmation" required="required" class="form-control"/>
+  </div>
+  <button type="submit" class="btn btn-primary btn-lg">Register</button>
+</form>

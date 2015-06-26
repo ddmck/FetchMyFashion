@@ -13,7 +13,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
   ]);
 
   $stateProvider
-  
+
     // route to show our landing page (/welcome)
     .state('welcome', {
       url: '/welcome',
@@ -26,9 +26,9 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         };
         $scope.wishlist = $localStorage.wishlistItems;
         var animationDelay = 2500;
- 
+
         animateHeadline($('.cd-headline'));
-         
+
         function animateHeadline($headlines) {
           $headlines.each(function(){
             var headline = $(this);
@@ -43,16 +43,71 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           switchWord($word, nextWord);
           setTimeout(function(){ hideWord(nextWord) }, animationDelay);
         }
-         
+
         function takeNext($word) {
           return (!$word.is(':last-child')) ? $word.next() : $word.parent().children().eq(0);
         }
-         
+
         function switchWord($oldWord, $newWord) {
           $oldWord.removeClass('is-visible').addClass('is-hidden');
           $newWord.removeClass('is-hidden').addClass('is-visible');
         }
       }
+    })
+
+    .state('admin', {
+      url: '/admin',
+      templateUrl: assetsUrl + 'partials/admin.html',
+      onEnter: function(Admin){
+        Admin.validateAdmin();
+      }
+    })
+
+    .state('admin.new', {
+      url: '/new',
+      templateUrl: assetsUrl + 'partials/admin-new.html',
+      controller: 'AdminController',
+    })
+
+    .state('admin.users', {
+      url: '/users',
+      templateUrl: assetsUrl + 'partials/users.html',
+      controller: 'UserAdminController',
+    })
+
+    .state('admin.userDetail', {
+      url: '/users/{userID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/user-detail.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
+      controller: "UserDetailAdminController"
+    })
+
+    .state('editUser', {
+      url: '/users/editUser',
+      templateUrl: assetsUrl + 'partials/edit-user.html',
+      controller: "UserDetailAdminController"
+    })
+
+    .state('admin.logOut', {
+      url: '/logOut',
+      templateUrl: assetsUrl + 'partials/admin-logOut.html',
+      controller: function($scope, $localStorage, $state){
+        $scope.signOutClick = function() {
+          $scope.signOut();
+          $localStorage.$reset();
+          $state.go('account.signIn');
+        };
+      }
+    })
+
+    .state('admin.signIn', {
+      url: '/sign-in',
+      templateUrl: assetsUrl + 'partials/admin-sign-in.html',
+      controller: 'AdminController'
     })
 
     .state('basket', {
@@ -106,7 +161,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.goToSignIn = function(){
           $localStorage.returnTo = "pay.address";
           $state.go("account.signIn");
-        }, 
+        },
         $scope.goToSignUp = function(){
           $localStorage.returnTo = "pay.address";
           $state.go("account.signUp");
@@ -119,7 +174,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
 
     .state('pay.address', {
       url: '/address',
-      templateUrl: assetsUrl + 'partials/address.html', 
+      templateUrl: assetsUrl + 'partials/address.html',
       controller: function($scope, $state, $localStorage){
         $scope.localStorage = $localStorage;
         $scope.submitAddress = function(addressForm) {
@@ -139,17 +194,21 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         $scope.localStorage = $localStorage;
         $scope.handleStripe = function(status, response){
           if(response.error) {
-            $scope.billingForm.error = response.error;
+            if(response.error.message) {
+              $scope.billingForm.error = response.error.message;
+            } else {
+              $scope.billingForm.error = response.error;
+            }
           } else {
             // got stripe token, now charge it or smt
             $localStorage.token = response.id;
             $localStorage.last4 = $scope.number.slice(-4);
-            $state.go('pay.confirmation')
+            $state.go('pay.confirmation');
           }
         };
         $scope.clear = function(){
           $localStorage.token = null;
-        }
+        };
       },
       onEnter: function(){
         window.scrollTo(0,0);
@@ -161,7 +220,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       templateUrl: assetsUrl + 'partials/confirmation.html',
       controller: function($scope, $localStorage, $state, $http, Basket, Deliveries){
         $scope.basket = Basket;
-        $scope.deliveries = Deliveries;      
+        $scope.deliveries = Deliveries;
         Basket.fetchBasketItemProducts();
         $scope.localStorage = $localStorage;
         $scope.submitOrder = function(){
@@ -175,7 +234,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             $state.go("pay.confirmed");
             Basket.reset();
           });
-        } 
+        }
       },
       onEnter: function(){
         window.scrollTo(0,0);
@@ -279,7 +338,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
             $scope.wishlist = WishlistItems;
             WishlistItems.fetchWishlistItemProducts();
           }
-          
+
         }
         var cb = callback()
         if ($auth.user.id) {
@@ -294,7 +353,7 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           authModal.activate()
 
         }
-        
+
         $scope.addToWishlist = function(product){
           WishlistItems.addToWishlistItems(product);
         };
@@ -321,8 +380,8 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
       },
       onExit: function(Products){
-        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
-        Products.setLastScrollLocation(lastScroll)
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        Products.setLastScrollLocation(lastScroll);
       }
     })
 
@@ -435,33 +494,63 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       onEnter: function(){
         window.scrollTo(0,0);
       }
-    })
+    });
 
-    
-      
+
+
   // catch all route
-  // send users to the form page 
+  // send users to the form page
   $urlRouterProvider
+    .when('/admin', 'admin/new')
     .when('/products', 'products/new')
     .when('/account', 'account/sign-in')
     .when('/pay', 'pay/you')
     .otherwise('/welcome');
-  
-  $authProvider.configure({
+
+  $authProvider.configure([
+  {
+    default: {
       apiUrl: backendUrl + 'api',
-      passwordResetSuccessUrl: window.location.protocol + '//' + window.location.host + '/account/password-reset' 
-  });
+      passwordResetSuccessUrl: window.location.protocol + '//' + window.location.host + '/account/password-reset',
+      authProviderPaths: {
+        facebook: '/auth/facebook'
+      }
+    }
+  }, {
+    admin: {
+      apiUrl:                backendUrl + 'api',
+      signOutUrl:            '/admin_auth/sign_out',
+      emailSignInPath:       '/admin_auth/sign_in',
+      emailRegistrationPath: '/admin_auth',
+      accountUpdatePath:     '/admin_auth',
+      accountDeletePath:     '/admin_auth',
+      passwordResetPath:     '/admin_auth/password',
+      passwordUpdatePath:    '/admin_auth/password',
+      tokenValidationPath:   '/admin_auth/validate_token',
+      authProviderPaths: {
+        facebook:  '/admin_auth/facebook'
+      },
+      tokenFormat: {
+        "access-token": "{{ token }}",
+        "token-type":   "Bearer",
+        "client":       "{{ clientId }}",
+        "expiry":       "{{ expiry }}",
+        "uid":          "{{ uid }}"
+      }
+    }
+  }
+  ]);
 
   $locationProvider.html5Mode(true);
   $locationProvider.hashPrefix('!');
-})
+});
 
 app.run(function($rootScope, $location, Meta) {
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
     ga('send', 'pageview', $location.path());
     Meta.set("url", $location.protocol() + '://' + $location.host() + $location.path());
   });
-})
+});
 
 app.directive('ngNavBar', function(){
   return {
@@ -532,6 +621,15 @@ app.directive('ngSizeDropdown', function(){
     transclude: true
   }
 });
+
+app.directive('ngMoreLikeThis', function(){
+  return {
+    restrict: 'A',
+    templateUrl: assetsUrl + 'templates/more-like-this.html',
+    replace: true,
+    transclude: true
+  }
+})
 
 app.directive('ngProductDetails', function(){
   return {
@@ -861,14 +959,34 @@ app.factory('Filters', ['$location', function($location){
     },
     resetAll: function(hard){
       if (hard) {
-        
         filters = {gender: filters.gender};
         lastResetFrom = $location.absUrl();
       } else if (lastResetFrom !== $location.absUrl()) {
         filters = {gender: filters.gender};
         lastResetFrom = $location.absUrl();
-      } 
-    }         
+      }
+    }
+  };
+}]);
+
+app.factory('Users', ['$http', function($http){
+  var users = [];
+  var page = 1;
+  return{
+    fetchUsers: function(){
+      $http.get(backendUrl + 'api/users.json', {async: true, params:{page: page}}).success(function(data){
+        users = data;
+      });
+    },
+    list: function(){
+      return users;
+    },
+    increment: function(){
+      page++;
+    },
+    decrement: function(){
+      page--;
+    }
   };
 }]);
 
@@ -884,56 +1002,141 @@ app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products
     list: function(){
       return trends;
     }
-  }
+  };
 }]);
 
 
+app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http, $auth, $state, $rootScope){
+  var messages = [];
+  return {
+    validateAdmin: function(){
+      $auth.validateUser()
+      .then(function(resp){
+        if (!resp.configName || resp.configName != "admin"){
+          $state.go('welcome');
+        } else if ($state.$current == 'admin') {
+          $state.go('admin.new');
+        }
+      })
+      .catch(function(resp){
+        $state.go('admin.signIn');
+      });
+    },
+    fetchMessages: function(customerId){
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId}})
+        .success(function(data){
+          messages = data;
+        });
+    },
+    listMessages: function(){
+      return messages;
+    },
+    sendMessage: function(adminId, customerId, content){
+      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{admin_id: adminId, user_id: customerId, text: content, seen: false}})
+        .success(function(data){
+          $rootScope.$broadcast('newMessage');
+        });
+    }
+  };
+}]);
+
 app.factory('Categories', [ '$http', '$rootScope', function($http, $rootScope){
   var categories = [];
+  var loaded = false;
   return {
-    fetchCategories: function(){
+    fetchCategories: function(dataHolder){
       $http.get(backendUrl + 'categories.json', {async: true}).success(function(data){
         categories = data;
-        $rootScope.$broadcast('catsLoaded');
-        $rootScope.$broadcast('stylesLoaded');
+        if (!loaded) { $rootScope.$broadcast('catsLoaded'); loaded = true; }
+        if (!!dataHolder) {$rootScope.$broadcast('categoriesReceived', dataHolder);}
       });
     },
     list: function(){
       return categories;
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(categories, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('catsLoaded');
     }
-
-  }
+  };
 }]);
 
 app.factory('Colors', [ '$http', '$rootScope', function($http, $rootScope){
   var colors = [];
+  var loaded = false;
   return {
-    fetchColors: function(){
+    fetchColors: function(dataHolder){
       $http.get(backendUrl + 'colors.json', {async: true}).success(function(data){
         colors = data;
-        $rootScope.$broadcast('colorsLoaded');
+        if (!loaded) {$rootScope.$broadcast('colorsLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('colorsReceived', dataHolder);}
       });
     },
     list: function(){
       return colors;
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(colors, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('colorsLoaded');
     }
-
-  }
+  };
 }]);
 
-app.factory('Materials', [ '$http', function($http){
+app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
   var materials = [];
+  var loaded = false;
   return {
-    fetchMaterials: function(){
+    fetchMaterials: function(dataHolder){
       $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
         materials = data;
+        if (!loaded) {$rootScope.$broadcast('materialsLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('materialsReceived', dataHolder);}
       });
     },
     list: function(){
       return materials;
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(materials, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('materialsLoaded');
     }
-
-  }
+  };
 }]);
 
 app.factory('Stores', [ '$http', function($http){
@@ -991,24 +1194,24 @@ app.factory('Deliveries', ['$localStorage', function($localStorage){
         holdingArr.push(delivery);
       }
       $localStorage.deliveries = holdingArr;
-    }, 
+    },
     reset: function(){
       $localStorage.deliveries = [];
     },
     total: function(){
       if ($localStorage.deliveries.length > 0) {
         var total = 0;
-         _.forEach($localStorage.deliveries, function(n) { 
-          total += n.price; 
+         _.forEach($localStorage.deliveries, function(n) {
+          total += n.price;
         });
         return total;
       } else {
         return 0;
       }
-      
+
     }
-  }
-}])
+  };
+}]);
 
 
 app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
@@ -1017,7 +1220,7 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     fetchSubCategories: function(){
       $http.get(backendUrl + 'sub_categories.json', {async: true}).success(function(data){
         subCategories = data;
-        $rootScope.$broadcast('subCatsLoaded'); 
+        $rootScope.$broadcast('subCatsLoaded');
       });
     },
     list: function(){
@@ -1025,19 +1228,21 @@ app.factory('SubCategories', [ '$http', 'Filters', '$rootScope', function($http,
     },
     availableList: function(){
       return _.filter(subCategories, function(subCat){
-        return subCat.category_id == Filters.getFilters().category
-      })
+        return subCat.category_id == Filters.getFilters().category;
+      });
     }
-  }
+  };
 }]);
 
 app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filters, $rootScope){
   var styles = [];
+  var loaded = false;
   return {
-    fetchStyles: function(){
+    fetchStyles: function(dataHolder){
       $http.get(backendUrl + 'styles.json', {async: true}).success(function(data){
         styles = data;
-        $rootScope.$broadcast('stylesLoaded');
+        if (!loaded) {$rootScope.$broadcast('stylesLoaded'); loaded = true;}
+        if (!!dataHolder) {$rootScope.$broadcast('stylesReceived', dataHolder);}
       });
     },
     list: function(){
@@ -1045,10 +1250,26 @@ app.factory('Styles', [ '$http', 'Filters', '$rootScope', function($http, Filter
     },
     availableList: function(){
       return _.filter(styles, function(style){
-        return style.category_id == Filters.getFilters().category
-      })
+        return style.category_id == Filters.getFilters().category;
+      });
+    },
+    addCount: function(newArr){
+      var array = [];
+      _.map(styles, function(n){
+        _.forEach(newArr, function(v){
+          if (v.name == n.name){
+            n.count = v.count;
+            n.displayName = n.name + ' ' + '(' + n.count + ')';
+          }
+        });
+        if (!n.count){
+          n.count = 0;
+          n.displayName = n.name;
+        }
+      });
+      $rootScope.$broadcast('stylesLoaded');
     }
-  }
+  };
 }]);
 
 app.factory('Orders', [ '$http', function($http){
@@ -1062,7 +1283,7 @@ app.factory('Orders', [ '$http', function($http){
     list: function(){
       return orders;
     }
-  }
+  };
 }]);
 
 app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localStorage){
@@ -1081,7 +1302,7 @@ app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localS
     },
     listProducts: function(){
       return _.map(wishlistItems, function(wl){
-        return wl.product
+        return wl.product;
       });
     },
     list: function(){
@@ -1094,18 +1315,18 @@ app.factory('WishlistItems', [ '$http', '$localStorage', function($http, $localS
       return !(ans === undefined);
     },
     addToWishlistItems: function(product){
-      
+
       var wli = _.find(wishlistItems, function(wl){
         return wl.product.id === product.id;
       })
       if ( wli === undefined ) {
         $http.post(backendUrl + 'api/wishlist_items.json', {async: true, params: {
-                                                                              product_id: product.id 
+                                                                              product_id: product.id
                                                                               }})
           .success(function(data){
             wishlistItems.push(data)
           });
-        
+
       } else {
 
         $http.delete(backendUrl + 'api/wishlist_items/' + wli.id + '.json', {async: true})
@@ -1139,7 +1360,7 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       _.forEach(basketItems, function(item){
         $http.get(backendUrl + 'products/' + item.productId + '.json').success(function(data){
           data.selectedSize = item.sizeName;
-          products.push(data); 
+          products.push(data);
         });
       });
     },
@@ -1161,9 +1382,9 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
     },
     addToBasketItems: function(product){
       var basketItems = $localStorage.basketItems;
-      var productWithSize = { 
+      var productWithSize = {
         productId: product.id,
-        sizeName: product.selectedSize.name 
+        sizeName: product.selectedSize.name
       }
       basketItems.push(productWithSize);
       $localStorage.basketItems = basketItems;
@@ -1176,15 +1397,15 @@ app.factory('Basket', [ '$http', '$localStorage', function($http, $localStorage)
       $localStorage.basketItems = basketItems;
       products = _.reject(products, function(p){
         return p === product;
-      })   
-    }, 
+      })
+    },
     inBasketItems: function(productID){
       return _.some(products, { 'id': productID });
     }
   }
 }]);
 
-app.factory('Products', ['$http', 'Filters', '$location', function($http, Filters, $location){
+app.factory('Products', ['$http', 'Filters', '$location', 'Colors', 'Brands', '$rootScope', 'Materials', 'Categories', 'Styles', function($http, Filters, $location, Colors, Brands, $rootScope, Materials, Categories, Styles){
 
   var query = $location.search();
   Filters.useQuery(query);
@@ -1245,13 +1466,13 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
     },
     fetchProducts: function(){
       searching = true;
-      $http.get(backendUrl + 'products.json', { async: true, 
+      $http.get(backendUrl + 'products.json', { async: true,
                                                 params: {
-                                                  page: page.toString(), 
+                                                  page: page.toString(),
                                                   filters: {
                                                     gender_id: Filters.getFilters().gender,
-                                                    brand_id: Filters.getFilters().brand, 
-                                                    category_id: Filters.getFilters().category, 
+                                                    brand_id: Filters.getFilters().brand,
+                                                    category_id: Filters.getFilters().category,
                                                     sub_category_id: Filters.getFilters().subCategory,
                                                     color_id: Filters.getFilters().color,
                                                     material_id: Filters.getFilters().material,
@@ -1259,13 +1480,27 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     brand_id: Filters.getFilters().brand,
                                                     out_of_stock: false,
                                                     has_sizes: true
-                                                  }, 
-                                                  sort: Filters.getFilters().sort, 
+                                                  },
+                                                  sort: Filters.getFilters().sort,
                                                   search_string: Filters.getFilters().searchString
-                                                  
+
                                                 }}).success(function(data){
-                                                  if (data.length > 0) {
-                                                    products = products.concat(data);
+                                                  if (data.colors && data.colors.length > 0) {
+                                                    Colors.fetchColors(data.colors);
+                                                  }
+                                                  if (data.categories && data.categories.length > 0) {
+                                                    Categories.fetchCategories(data.categories);
+                                                  }
+                                                  if (data.materials && data.materials.length > 0) {
+                                                    Materials.fetchMaterials(data.materials);
+                                                  }
+                                                  if (data.brands && data.brands.length > 0) {
+                                                    Brands.fetchBrands(data.brands);
+                                                  }
+                                                  if (data.styles && data.styles.length > 0) {
+                                                    Styles.fetchStyles(data.styles);                                                  }
+                                                  if (data.products.length > 0) {
+                                                    products = products.concat(data.products);
                                                     page += 1;
                                                     scrollActive = true;
                                                     searching = false;
@@ -1273,7 +1508,7 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
                                                     scrollActive = false;
                                                     searching = false;
                                                   }
-       
+
       });
     },
     currentlySearching: function(){
@@ -1282,44 +1517,70 @@ app.factory('Products', ['$http', 'Filters', '$location', function($http, Filter
   };
 }]);
 
-app.factory('Materials', [ '$http', '$rootScope', function($http, $rootScope){
-  var materials = [];
+app.factory('MoreLikeThis', ['$http', '$rootScope', function($http, $rootScope){
+  var moreLikeThis = [];
   return {
-    fetchMaterials: function(){
-      $http.get(backendUrl + 'materials.json', {async: true}).success(function(data){
-        materials = data;
-        $rootScope.$broadcast('materialsLoaded');
-      });
+    getMoreLikeThis: function(){
+      return moreLikeThis;
     },
-    list: function(){
-      return materials;
+    fetchMoreLikeThis: function(item){
+      searching = true;
+      $http.get(backendUrl + 'more_like_this.json', { async: true,
+                                                      params: {
+                                                        id: item.id
+                                                      }
+                                                    })
+                                                    .success(function(data){
+                                                      moreLikeThis = [];
+                                                      moreLikeThis = moreLikeThis.concat(data);
+                                                      moreLikeThis = _.reject(moreLikeThis, {'id': item.id});
+                                                      $rootScope.$broadcast('moreLikeThisLoaded');
+                                                    });
     }
-
-  }
+  };
 }]);
 
 app.factory('Brands', ['$http', '$rootScope', function($http, $rootScope){
-  var o = {}
+  var o = {};
   o.brands = [];
-  o.fetchBrands = function(){
+  o.loaded = false;
+  o.fetchBrands = function(dataHolder){
     $http.get(backendUrl + 'brands.json', { async: true }).success(function(data){
       o.brands = data;
-      $rootScope.$broadcast('brandsLoaded');       
+      if (!o.loaded) {$rootScope.$broadcast('brandsLoaded'); o.loaded = true;}
+      if (!!dataHolder) {$rootScope.$broadcast('brandsReceived', dataHolder);}
     });
-  }
+  };
 
   o.formattedList = function(){
     return _.groupBy(o.brands, function(br){
       return br.name[0].toLowerCase();
     });
-  }
+  };
 
   o.list = function(){
     return o.brands;
-  }
+  };
 
-  return o
-}])
+  o.addCount = function(newArr){
+    var array = [];
+    _.map(o.brands, function(n){
+      _.forEach(newArr, function(v){
+        if (v.name == n.name){
+          n.count = v.count;
+          n.displayName = n.name + ' ' + '(' + n.count + ')';
+        }
+      });
+      if (!n.count){
+        n.count = 0;
+        n.displayName = n.name;
+      }
+    });
+    $rootScope.$broadcast('brandsLoaded');
+  };
+
+  return o;
+}]);
 
 app.factory('Meta', function(){
   content = {};
@@ -1330,7 +1591,7 @@ app.factory('Meta', function(){
     set: function(setter, value){
       content[setter] = value;
     }
-  }
+  };
 });
 
 app.factory('authModal', function (btfModal) {
@@ -1339,7 +1600,7 @@ app.factory('authModal', function (btfModal) {
     controllerAs: 'modal',
     templateUrl: assetsUrl + 'partials/auth-modal.html'
   });
-})
+});
 
 app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localStorage', 'authModal', 'WishlistItems', function ($scope, $state, $auth, $localStorage, authModal, WishlistItems) {
   $scope.$on('auth:login-error', function(ev, reason) { 
@@ -1362,11 +1623,20 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
-        
+        console.log(resp);
       })
       .catch(function(resp) { 
        //$scope.error = resp;
       });
+  };
+  $scope.handleFacebookBtnClick = function() {
+    $auth.authenticate('facebook')
+      .then(function(resp) {
+        
+      })
+      .catch(function(resp) {
+
+      })
   };
 
   $scope.loginClick = function() {
@@ -1378,7 +1648,73 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
 
   $scope.signOutClick = function() {
     $scope.signOut();
+    $localStorage.$reset();
     $state.go('account.signIn');
+  };
+}]);
+
+app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
+
+  $scope.handleRegBtnClick = function() {
+    $auth.submitRegistration($scope.registrationForm, {config: 'admin'})
+      .then(function(resp) {
+        console.log("Worked");
+      })
+      .catch(function(resp) { 
+        console.log("Error");
+      });
+    };
+
+  $scope.buttonClick = function() {
+    $scope.submitted = true;
+    if ($scope.registration.$valid){
+      $scope.handleRegBtnClick();
+    }
+  };
+
+  $scope.handleLoginBtnClick = function() {
+  $auth.submitLogin($scope.loginForm, {config: 'admin'})
+    .then(function(resp) {
+
+    })
+    .catch(function(resp) {
+
+    });
+  };
+}]);
+
+app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
+  Users.fetchUsers();
+  $scope.users = Users;
+
+  $scope.incrementPage = function() {
+    $scope.users.increment();
+    $scope.users.fetchUsers();
+  };
+
+  $scope.decrementPage = function() {
+    $scope.users.decrement();
+    $scope.users.fetchUsers();
+  };
+}]);
+
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope){
+  $scope.id = $stateParams.userID;
+  $scope.admin = Admin;
+
+  $rootScope.$on('newMessage', function(){
+    Admin.fetchMessages($scope.id);
+  });
+
+  if ($state.current.name == "admin.userDetail"){
+    $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
+      $scope.userToEdit = data;
+    });
+    Admin.fetchMessages($scope.id);
+  }
+
+  $scope.sendMessage = function(messageText) {
+    Admin.sendMessage($scope.user.id, $scope.id, messageText);
   };
 }]);
 
@@ -1538,7 +1874,7 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
     if (Products.scrollActive() === true) {
       ga('send', 'event', 'products', 'viewPage', Products.currentPage());
       Products.setScrollActive(false);
-      Products.fetchProducts()
+      Products.fetchProducts();
     }
   };
 
@@ -1579,30 +1915,34 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
   var changed;
   Categories.fetchCategories();
   $scope.catId = Filters.getFilters().category;
-  $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
+  $scope.myCats = [{id: 0, displayName: "All"}].concat(Categories.list());
   $scope.$on("catsLoaded", function(){
-    $scope.myCats = [{id: 0, name: "All"}].concat(Categories.list());
+    $scope.myCats = [{id: 0, displayName: "All"}].concat(Categories.list());
   });
 
+  $rootScope.$on("categoriesReceived", function(event, array){
+    Categories.addCount(array);
+  });
 
-  $scope.categories = Categories
+  $scope.categories = Categories;
 
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
       searchField: 'name',
       allowEmptyOption: true
     };
 
   $scope.setCategory = function(cat_id){
-    if (cat_id === undefined || cat_id == 0) {
+    if (cat_id === undefined || cat_id === 0) {
       changed = Filters.removeFilter("category");
     } else {
       changed = Filters.setFilter("category", parseInt(cat_id));
       ga('send', 'event', 'filters', 'selectCategory', cat_id);
-      $rootScope.$broadcast('stylesLoaded');
+      //$rootScope.$broadcast('stylesLoaded');
     }
     
     if (changed) {
@@ -1643,13 +1983,17 @@ app.controller('SubCategoryController', ['$scope', 'Filters', 'Products', 'Categ
   };
 }]);
 
-app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', function($scope, Filters, Products, Categories, Styles){
+app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories', 'Styles', '$rootScope', function($scope, Filters, Products, Categories, Styles, $rootScope){
   var changed;
   $scope.styleId = Filters.getFilters().style;
   Styles.fetchStyles();
-  $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+  $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
   $scope.$on("stylesLoaded", function(){
-    $scope.myStyles = [{id: 0, name: "All"}].concat(Styles.availableList());
+    $scope.myStyles = [{id: 0, displayName: "All"}].concat(Styles.availableList());
+  });
+
+  $rootScope.$on("stylesReceived", function(event, array){
+    Styles.addCount(array);
   });
 
   $scope.styles = Styles;
@@ -1658,7 +2002,8 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   $scope.myConfig = {
     create: false,
     valueField: 'id',
-    labelField: 'name',
+    labelField: 'displayName',
+    sortField: [{field: 'count', direction: 'desc'}],
     maxItems: 1,
     searchField: 'name',
     allowEmptyOption: true
@@ -1678,23 +2023,27 @@ app.controller('StylesController', ['$scope', 'Filters', 'Products', 'Categories
   };
 }]);
 
-app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', function($scope, Filters, Products, Colors){
+app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', '$rootScope', function($scope, Filters, Products, Colors, $rootScope){
   var changed;
-  $scope.colorId = Filters.getFilters().color;
   Colors.fetchColors();
-  $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
+  $scope.colorId = Filters.getFilters().color;
+  $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
   $scope.$on("colorsLoaded", function(){
-    $scope.myColors = [{id: 0, name: "All"}].concat(Colors.list());
+    $scope.myColors = [{id: 0, displayName: "All"}].concat(Colors.list());
+  });
+
+  $rootScope.$on("colorsReceived", function(event, array){
+    Colors.addCount(array);
   });
 
   $scope.colors = Colors;
-  
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
-      searchField: 'name',
+      searchField: 'displayName',
       allowEmptyOption: true
     };
 
@@ -1711,15 +2060,19 @@ app.controller('ColorController', ['$scope', 'Filters', 'Products', 'Colors', fu
   };
 }]);
 
-app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', function($scope, Filters, Products, Brands, $http){
+app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Brands', '$http', '$rootScope', function($scope, Filters, Products, Brands, $http, $rootScope){
   var changed;
   $scope.brandId = Filters.getFilters().brand;
 
   Brands.fetchBrands();
-  $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands);
+  $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
   
   $scope.$on("brandsLoaded", function(){
-    $scope.myBrands = [{id: 0, name: "All"}].concat(Brands.brands)
+    $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
+  });
+
+  $rootScope.$on("brandsReceived", function(event, array){
+    Brands.addCount(array);
   });
 
   $scope.brands = Brands;
@@ -1727,7 +2080,8 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   $scope.myConfig = {
       create: false,
       valueField: 'id',
-      labelField: 'name',
+      labelField: 'displayName',
+      sortField: [{field: 'count', direction: 'desc'}],
       maxItems: 1,
       searchField: 'name',
       allowEmptyOption: true
@@ -1764,7 +2118,7 @@ app.controller('SearchController', ['$state', 'Filters', 'Products', 'Categories
       $state.go('search', {searchString: searchString});
       ga('send', 'event', 'products', 'search', searchString);
     }
-  }
+  };
 
   this.findCat = function(searchString){
     Filters.removeFilter("category");
@@ -1854,21 +2208,26 @@ app.controller('OrdersController', ['$scope', 'Orders', function($scope, Orders)
   $scope.orders = Orders;
 }]);
 
-app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', function($scope, Filters, Products, Materials){
+app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', '$rootScope', function($scope, Filters, Products, Materials, $rootScope){
   
   $scope.materials = [];
   Materials.fetchMaterials();
-  $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list());
+  $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list());
   $scope.filters = Filters;
 
   $scope.$on("materialsLoaded", function(){
-    $scope.myMaterials = [{id: 0, name: "All"}].concat(Materials.list())
+    $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list())
+  });
+
+  $rootScope.$on("materialsReceived", function(event, array){
+    Materials.addCount(array);
   });
 
   $scope.myConfig = {
     create: false,
     valueField: 'id',
-    labelField: 'name',
+    labelField: 'displayName',
+    sortField: [{field: 'count', direction: 'desc'}],
     maxItems: 1,
     searchField: 'name',
     allowEmptyOption: true
@@ -1889,7 +2248,7 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
   };
 }]);
 
-app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage){
+app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'Basket', 'Meta', 'WishlistItems', '$auth', 'authModal','$localStorage', 'MoreLikeThis', '$rootScope', function($scope, $stateParams, $http, Basket, Meta, WishlistItems, $auth, authModal, $localStorage, MoreLikeThis, $rootScope){
   // get the id
   $scope.showMenu = false;
   $scope.id = $stateParams.productID;
@@ -1897,7 +2256,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
   $scope.basket.fetchBasketItemProducts();
   $scope.size = null;
 
-
+  $scope.MLT = MoreLikeThis;
 
   $http.get(backendUrl + 'products/' + $scope.id + '.json', {async: true}).success(function(data){
     $scope.product = data;
@@ -1918,6 +2277,8 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
 
     $scope.getStoreDetails($scope.product);
     window.scrollTo(0, 0);
+
+    $scope.MLT.fetchMoreLikeThis($scope.product);
     // if ($scope.product.deeplink) {
     //   $scope.scraping = true
 

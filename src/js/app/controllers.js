@@ -19,7 +19,7 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
-        
+        console.log(resp);
       })
       .catch(function(resp) { 
        //$scope.error = resp;
@@ -46,6 +46,113 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
     $scope.signOut();
     $localStorage.$reset();
     $state.go('account.signIn');
+  };
+}]);
+
+app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
+
+  $scope.handleRegBtnClick = function() {
+    $auth.submitRegistration($scope.registrationForm, {config: 'admin'})
+      .then(function(resp) {
+        console.log("Worked");
+      })
+      .catch(function(resp) { 
+        console.log("Error");
+      });
+    };
+
+  $scope.buttonClick = function() {
+    $scope.submitted = true;
+    if ($scope.registration.$valid){
+      $scope.handleRegBtnClick();
+    }
+  };
+
+  $scope.handleLoginBtnClick = function() {
+  $auth.submitLogin($scope.loginForm, {config: 'admin'})
+    .then(function(resp) {
+
+    })
+    .catch(function(resp) {
+
+    });
+  };
+}]);
+
+app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users){
+  Users.fetchUsers();
+  $scope.users = Users;
+
+  $scope.incrementPage = function() {
+    $scope.users.increment();
+    $scope.users.fetchUsers();
+  };
+
+  $scope.decrementPage = function() {
+    $scope.users.decrement();
+    $scope.users.fetchUsers();
+  };
+}]);
+
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', 'UserToEdit', '$auth', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations, UserToEdit, $auth){
+  $scope.id = $stateParams.userID;
+  $scope.admin = Admin;
+  $scope.recommendations = Recommendations;
+  $scope.userToEdit = UserToEdit;
+  $scope.openChat = false;
+  $scope.openRecommendations = false;
+
+  $rootScope.$on('newMessage', function(){
+    Admin.fetchMessages($scope.id);
+  });
+
+  $rootScope.$on('userToEditLoaded', function(){
+    $scope.userToEdit = UserToEdit.list();
+  });
+
+  if ($state.current.name == "admin.userDetail"){
+    UserToEdit.fetchUser($scope.id);
+    Admin.fetchMessages($scope.id);
+    Recommendations.fetchRecommendations($scope.id);
+  }
+
+  $scope.sendMessage = function(messageText) {
+    Admin.sendMessage($scope.id, messageText);
+  };
+
+  $scope.createRecommendation = function(){
+    $scope.recommendation.sender_id = $scope.user.id;
+    $scope.recommendation.product_id = $scope.recommendation.product_id.match(/\/\d+\-/)[0].slice(1, - 1);
+    Recommendations.createRecommendation($scope.recommendation);
+  };
+
+  $scope.openC = function(){
+    if ($scope.openRecommendations === true){
+      $scope.openRecommendations = false;
+      $scope.openChat = !$scope.openChat;
+    }else{
+      $scope.openChat = !$scope.openChat;
+    }
+  };
+
+  $scope.openR = function(){
+    if ($scope.openChat === true){
+      $scope.openChat = false;
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }else{
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }
+  };
+
+  $scope.handleUpdateAccountBtnClick = function() {
+    console.log($scope.updateAccountForm);
+    $auth.updateAccount($scope.updateAccountForm, {config: 'user'})
+      .then(function(resp) {
+        console.log(resp);
+      })
+      .catch(function(resp) { 
+        console.log(resp);
+      });
   };
 }]);
 
@@ -128,7 +235,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
 }]);
 
 app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', function($state, $scope, Trends, Filters){
-  $scope.trends = []
+  $scope.trends = [];
   Trends.fetchTrends();
   $scope.trends = Trends;
   $scope.trend = Trends.list();
