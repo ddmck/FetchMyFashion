@@ -320,8 +320,8 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
         setTimeout(function(){ window.scrollTo(0,Products.getLastScrollLocation()); }, 5);
       },
       onExit: function(Products){
-        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop
-        Products.setLastScrollLocation(lastScroll)
+        var lastScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        Products.setLastScrollLocation(lastScroll);
       }
     })
 
