@@ -83,12 +83,31 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
           $state.go('admin.users');
         }
       },
+      controller: "UserDetailAdminController",
+      onExit: function(Admin){
+        Admin.clearMessages();
+      }
+    })
+
+    .state('admin.addRecommendation', {
+      url: '/users/{userID:[0-9]+}/addRecommendation',
+      templateUrl: assetsUrl + 'partials/recommendation.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
       controller: "UserDetailAdminController"
     })
 
-    .state('editUser', {
-      url: '/users/editUser',
+    .state('admin.editUser', {
+      url: '/users/{userID:[0-9]+}/editUser',
       templateUrl: assetsUrl + 'partials/edit-user.html',
+      onEnter: function($stateParams, $state){
+        if ($stateParams.userID === "") {
+          $state.go('admin.users');
+        }
+      },
       controller: "UserDetailAdminController"
     })
 
@@ -990,6 +1009,22 @@ app.factory('Users', ['$http', function($http){
   };
 }]);
 
+app.factory('UserToEdit', ['$http', '$rootScope', function($http, $rootScope){
+  var user = [];
+  return{
+    fetchUser: function(id){
+      $http.get(backendUrl + 'api/users/' + id + '.json', {async: true})
+      .success(function(data){
+        user = data;
+        $rootScope.$broadcast('userToEditLoaded');
+      });
+    },
+    list: function(){
+      return user;
+    }
+  };
+}]);
+
 
 app.factory('Trends', [ '$http', 'Products', 'Filters', function($http, Products, Filters){
   var trends = [];
@@ -1031,11 +1066,35 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
     listMessages: function(){
       return messages;
     },
-    sendMessage: function(adminId, customerId, content){
-      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{admin_id: adminId, user_id: customerId, text: content, seen: false}})
+    sendMessage: function(customerId, content){
+      $http.post(backendUrl + 'api/messages/admin_message.json', {async: true, message:{user_id: customerId, text: content, seen: false}})
         .success(function(data){
           $rootScope.$broadcast('newMessage');
         });
+    },
+    clearMessages: function(){
+      messages = [];
+    }
+  };
+}]);
+
+app.factory('Recommendations', ['$http', '$state', function($http, $state){
+  var recommendations = [];
+  return {
+    createRecommendation: function(rec){
+      $http.post(backendUrl + 'recommendations.json', {asycn: true, recommendation: rec})
+        .success(function(data){
+          $state.go('admin.users');
+        });
+    },
+    fetchRecommendations: function(customerId){
+      $http.get(backendUrl + 'api/recommendations.json', {async: true, params:{user_id: customerId}})
+        .success(function(data){
+          recommendations = data;
+        });
+    },
+    list: function(){
+      return recommendations;
     }
   };
 }]);
@@ -1698,23 +1757,65 @@ app.controller('UserAdminController', ['$scope', 'Users', function($scope, Users
   };
 }]);
 
-app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope){
+app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', '$http', '$state', 'Admin', '$rootScope', 'Recommendations', 'UserToEdit', '$auth', function($scope, Users, $stateParams, $http, $state, Admin, $rootScope, Recommendations, UserToEdit, $auth){
   $scope.id = $stateParams.userID;
   $scope.admin = Admin;
+  $scope.recommendations = Recommendations;
+  $scope.userToEdit = UserToEdit;
+  $scope.openChat = false;
+  $scope.openRecommendations = false;
 
   $rootScope.$on('newMessage', function(){
     Admin.fetchMessages($scope.id);
   });
 
+  $rootScope.$on('userToEditLoaded', function(){
+    $scope.userToEdit = UserToEdit.list();
+  });
+
   if ($state.current.name == "admin.userDetail"){
-    $http.get(backendUrl + 'api/users/' + $scope.id + '.json', {async: true}).success(function(data){
-      $scope.userToEdit = data;
-    });
+    UserToEdit.fetchUser($scope.id);
     Admin.fetchMessages($scope.id);
+    Recommendations.fetchRecommendations($scope.id);
   }
 
   $scope.sendMessage = function(messageText) {
-    Admin.sendMessage($scope.user.id, $scope.id, messageText);
+    Admin.sendMessage($scope.id, messageText);
+  };
+
+  $scope.createRecommendation = function(){
+    $scope.recommendation.sender_id = $scope.user.id;
+    $scope.recommendation.product_id = $scope.recommendation.product_id.match(/\/\d+\-/)[0].slice(1, - 1);
+    Recommendations.createRecommendation($scope.recommendation);
+  };
+
+  $scope.openC = function(){
+    if ($scope.openRecommendations === true){
+      $scope.openRecommendations = false;
+      $scope.openChat = !$scope.openChat;
+    }else{
+      $scope.openChat = !$scope.openChat;
+    }
+  };
+
+  $scope.openR = function(){
+    if ($scope.openChat === true){
+      $scope.openChat = false;
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }else{
+      $scope.openRecommendations = !$scope.openRecommendations;
+    }
+  };
+
+  $scope.handleUpdateAccountBtnClick = function() {
+    console.log($scope.updateAccountForm);
+    $auth.updateAccount($scope.updateAccountForm, {config: 'user'})
+      .then(function(resp) {
+        console.log(resp);
+      })
+      .catch(function(resp) { 
+        console.log(resp);
+      });
   };
 }]);
 
@@ -1797,7 +1898,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
 }]);
 
 app.controller('TrendsController', ['$state', '$scope', 'Trends','Filters', function($state, $scope, Trends, Filters){
-  $scope.trends = []
+  $scope.trends = [];
   Trends.fetchTrends();
   $scope.trends = Trends;
   $scope.trend = Trends.list();

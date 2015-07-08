@@ -131,7 +131,7 @@ app.factory('Recommendations', ['$http', '$state', function($http, $state){
         });
     },
     fetchRecommendations: function(customerId){
-      $http.get(backendUrl + 'api/recommendations.json', {async: true, params:{id: customerId}})
+      $http.get(backendUrl + 'api/recommendations.json', {async: true, params:{user_id: customerId}})
         .success(function(data){
           recommendations = data;
         });
