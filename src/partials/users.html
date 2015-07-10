@@ -2,7 +2,7 @@
 	<ul ng-repeat="user in users.list()">
 		<li>
 			<a ui-sref="admin.userDetail({userID: user.id})">
-				<strong>{{ user.name }}</strong> - Email: {{ user.email }}
+				<strong>{{ user.name }}</strong> - Email: {{ user.email }} <span ng-hide="user.replied_to" style="color: red"><strong>### AWAITING REPLY ###</strong></span>
 			</a>
 		</li>
 	</ul>
