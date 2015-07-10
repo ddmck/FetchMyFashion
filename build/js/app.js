@@ -100,6 +100,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserDetailAdminController"
     })
 
+    .state('admin.viewRecommendation', {
+      url: '/users/{userID:[0-9]+}/recommendations/{recommendationID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/recommendation-view.html',
+      controller: 'RecommendationsController'
+    })
+
     .state('admin.editUser', {
       url: '/users/{userID:[0-9]+}/editUser',
       templateUrl: assetsUrl + 'partials/edit-user.html',
@@ -1058,7 +1064,7 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
       });
     },
     fetchMessages: function(customerId){
-      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId}})
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{user_id: customerId}})
         .success(function(data){
           messages = data;
         });
@@ -1082,9 +1088,9 @@ app.factory('Recommendations', ['$http', '$state', function($http, $state){
   var recommendations = [];
   return {
     createRecommendation: function(rec){
-      $http.post(backendUrl + 'recommendations.json', {asycn: true, recommendation: rec})
+      $http.post(backendUrl + 'recommendations.json', {async: true, recommendation: rec})
         .success(function(data){
-          $state.go('admin.users');
+          $state.go('admin.viewRecommendation', {userID: data.user_id, recommendationID: data.id});
         });
     },
     fetchRecommendations: function(customerId){
@@ -1662,8 +1668,8 @@ app.factory('authModal', function (btfModal) {
 });
 
 app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localStorage', 'authModal', 'WishlistItems', function ($scope, $state, $auth, $localStorage, authModal, WishlistItems) {
-  $scope.$on('auth:login-error', function(ev, reason) { 
-    $scope.error = reason.errors[0]; 
+  $scope.$on('auth:login-error', function(ev, reason) {
+    $scope.error = reason.errors[0];
   });
 
   $scope.$on('auth:login-success', function(ev){
@@ -1674,24 +1680,24 @@ app.controller('UserSessionsController', ['$scope', '$state', '$auth', '$localSt
       delete $localStorage.returnTo;
     } else if (authModal.active()) {
       return
-    } else { 
+    } else {
       $state.go('products.new');
     }
-        
+
   });
   $scope.handleLoginBtnClick = function() {
     $auth.submitLogin($scope.loginForm)
       .then(function(resp) {
         console.log(resp);
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
        //$scope.error = resp;
       });
   };
   $scope.handleFacebookBtnClick = function() {
     $auth.authenticate('facebook')
       .then(function(resp) {
-        
+
       })
       .catch(function(resp) {
 
@@ -1719,7 +1725,7 @@ app.controller('AdminController', ['$scope', '$auth', function($scope, $auth){
       .then(function(resp) {
         console.log("Worked");
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
         console.log("Error");
       });
     };
@@ -1767,6 +1773,7 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
 
   $rootScope.$on('newMessage', function(){
     Admin.fetchMessages($scope.id);
+    $scope.messageText = ""
   });
 
   $rootScope.$on('userToEditLoaded', function(){
@@ -1785,7 +1792,6 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
 
   $scope.createRecommendation = function(){
     $scope.recommendation.sender_id = $scope.user.id;
-    $scope.recommendation.product_id = $scope.recommendation.product_id.match(/\/\d+\-/)[0].slice(1, - 1);
     Recommendations.createRecommendation($scope.recommendation);
   };
 
@@ -1813,14 +1819,14 @@ app.controller('UserDetailAdminController', ['$scope', 'Users', '$stateParams', 
       .then(function(resp) {
         console.log(resp);
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
         console.log(resp);
       });
   };
 }]);
 
 app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$localStorage', function($scope, $state, $auth, $localStorage) {
-  $scope.$on('auth:registration-email-error', function(ev, reason) { 
+  $scope.$on('auth:registration-email-error', function(ev, reason) {
     $scope.error = reason.errors.full_messages[0];
   });
 
@@ -1835,9 +1841,9 @@ app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$lo
   $scope.handleRegBtnClick = function() {
     $auth.submitRegistration($scope.registrationForm)
       .then(function(resp) {
-        // ga('send', 'event', 'users', 'signUp'); 
+        // ga('send', 'event', 'users', 'signUp');
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
         //$scope.error = resp
       });
     };
@@ -1853,10 +1859,10 @@ app.controller('UserRegistrationsController', ['$scope', '$state', '$auth', '$lo
 app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$auth', function($stateParams, $state, $scope, $auth){
   $scope.handlePwdResetBtnClick = function() {
     $auth.requestPasswordReset($scope.passwordResetForm)
-      .success(function(resp) { 
+      .success(function(resp) {
         $scope.result = "You'll receive an email with a link shortly, didn't receive an email? Click the button below"
       })
-      .error(function(resp) { 
+      .error(function(resp) {
         $scope.error = resp.errors[0];
       });
   };
@@ -1886,7 +1892,7 @@ app.controller('UserRecoveryController', ['$stateParams','$state', '$scope', '$a
       .then(function(resp) {
         $scope.result = "Details updated successfully";
       })
-      .catch(function(resp) { 
+      .catch(function(resp) {
         if (resp.data.errors.name)
           {
             $scope.nameError = resp.data.errors.name[0]
@@ -1954,12 +1960,12 @@ app.controller('ProductsController',  ['$scope', '$http', '$state', 'Filters', '
       authModal.activate();
       ga('send', 'event', 'users', 'askedToSignIn', 'adding to wishlist');
     }
-    
+
   };
 
   this.checkIfWishedFor = function(product_id){
     return WishlistItems.wishedFor(product_id);
-  },                           
+  },
 
 
   this.openLink = function(product, userId){
@@ -2045,7 +2051,7 @@ app.controller('CategoryController', ['$scope', 'Filters', 'Products', 'Categori
       ga('send', 'event', 'filters', 'selectCategory', cat_id);
       //$rootScope.$broadcast('stylesLoaded');
     }
-    
+
     if (changed) {
       Filters.removeFilter("subCategory");
       Filters.removeFilter("style");
@@ -2167,7 +2173,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
 
   Brands.fetchBrands();
   $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
-  
+
   $scope.$on("brandsLoaded", function(){
     $scope.myBrands = [{id: 0, displayName: "All"}].concat(Brands.brands);
   });
@@ -2177,7 +2183,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
   });
 
   $scope.brands = Brands;
-  
+
   $scope.myConfig = {
       create: false,
       valueField: 'id',
@@ -2198,7 +2204,7 @@ app.controller('BrandDropdownController', ['$scope', 'Filters', 'Products', 'Bra
       Products.resetProducts(true);
       Products.fetchProducts();
     }
-  }; 
+  };
 }]);
 
 app.controller('MobileCatController', ['$scope', 'Categories', function($scope, Categories){
@@ -2247,7 +2253,7 @@ app.controller('ToggleController', ['$scope', function($scope){
 
   $scope.toggle = function(){
     $scope.open = !$scope.open;
-  } 
+  }
 }]);
 
 app.controller('BasketController', ['$scope', '$localStorage', 'Basket', 'Stores', 'Deliveries', function($scope, $localStorage, Basket, Stores, Deliveries){
@@ -2310,7 +2316,7 @@ app.controller('OrdersController', ['$scope', 'Orders', function($scope, Orders)
 }]);
 
 app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Materials', '$rootScope', function($scope, Filters, Products, Materials, $rootScope){
-  
+
   $scope.materials = [];
   Materials.fetchMaterials();
   $scope.myMaterials = [{id: 0, displayName: "All"}].concat(Materials.list());
@@ -2333,7 +2339,7 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
     searchField: 'name',
     allowEmptyOption: true
   };
-  
+
   $scope.setMaterial = function(mtrl_id){
     if (mtrl_id === undefined || mtrl_id == 0) {
       changed = Filters.removeFilter("material");
@@ -2345,7 +2351,7 @@ app.controller('MaterialController', ['$scope', 'Filters', 'Products', 'Material
       Products.resetProducts(true);
       Products.fetchProducts();
     }
-    
+
   };
 }]);
 
@@ -2384,14 +2390,14 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
     //   $scope.scraping = true
 
     //   $http.get(scraperUrl + $scope.product.deeplink, {async: true}).success(function(data){
-    //     $scope.product.sizes = _.map(data.sizes, function(size) { 
-    //       return {name: size.name.split(" - ")[0]}; 
+    //     $scope.product.sizes = _.map(data.sizes, function(size) {
+    //       return {name: size.name.split(" - ")[0]};
     //     });
     //     $scope.scraping = false
     //   })
 
     // }
-    
+
   });
 
   $scope.addToWishlist = function(product){
@@ -2416,7 +2422,7 @@ app.controller('ProductDetailController', ['$scope', '$stateParams', '$http', 'B
       authModal.activate();
       ga('send', 'event', 'users', 'askedToSignIn', 'adding to wishlist');
     }
-    
+
   };
 
   $scope.checkIfWishedFor = function(){
@@ -2496,7 +2502,7 @@ app.controller("BrandController", ["Meta", "$scope", "$http", "$stateParams", "P
   $http.get(backendUrl + 'brands/' + $stateParams.brandId + '.json', {async: true}).success(function(data){
     $scope.brand = data;
     $scope.checkIfFeaturedCategorySet($scope);
-    
+
     if ($stateParams.catID){
       Meta.set("title", $scope.brand.name + " " + $scope.category + " at Fetch My Fashion");
       Meta.set("description", "Shop " + $scope.brand.name + " " + $scope.category + " at Fetch My Fashion, All Your Favourite Stores In One Place");
@@ -2520,6 +2526,21 @@ app.controller("BrandController", ["Meta", "$scope", "$http", "$stateParams", "P
 
 app.controller('AuthModalCtrl', function (authModal) {
   this.closeMe = authModal.deactivate;
-})
+});
 
+app.controller('RecommendationsController', ["$scope", "$stateParams", "$http", function($scope, $stateParams, $http) {
+  $scope.recommendationID = $stateParams.recommendationID;
+  $http.get(backendUrl + 'api/recommendations/' + $scope.recommendationID + ".json", {async: true}).success(function(data){
+    $scope.recommendation = data;
+  });
+
+  $scope.createNew = function(recItem) {
+    console.log("hi");
+    $http.post(backendUrl + 'api/recommendations/' + $scope.recommendationID + "/recommendation_items.json", {async: true, recommendation_item: {description: recItem.description, product_id: recItem.productURL.match(/\/\d+\-/)[0].slice(1, - 1)}}).success(function(data) {
+      console.log(data);
+      $scope.newRecItem = null;
+      $scope.recommendation.recommendation_items.push(data);
+    })
+  }
+}]);
 

@@ -1944,7 +1944,6 @@ button.hide-filters {
       border-bottom-color: white;
       margin-bottom: -1px; }
   .accordion-tabs-minimal .tab-content {
-    display: none;
     padding: 1.5em 0;
     width: 100%;
     border-top: 1px solid #DDD;
@@ -2676,6 +2675,58 @@ NAV
 .dots .dot a.active {
   border-color: #F0F0F0;
   background-color: rgba(71, 125, 202, 0.5); }
+
+.user-panel {
+  margin-bottom: -2em;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-align-content: flex-start;
+      -ms-flex-line-pack: start;
+          align-content: flex-start;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start; }
+  .user-panel .chat-wrapper {
+    -webkit-box-flex: 4;
+    -webkit-flex-grow: 4;
+        -ms-flex-positive: 4;
+            flex-grow: 4;
+    -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+            flex-shrink: 0;
+    -webkit-flex-basis: 250px;
+        -ms-flex-preferred-size: 250px;
+            flex-basis: 250px;
+    padding-right: 5px;
+    border-right: 1px solid #212121; }
+  .user-panel .recommendation-wrapper {
+    -webkit-box-flex: 4;
+    -webkit-flex-grow: 4;
+        -ms-flex-positive: 4;
+            flex-grow: 4;
+    -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+            flex-shrink: 0;
+    -webkit-flex-basis: 250px;
+        -ms-flex-preferred-size: 250px;
+            flex-basis: 250px;
+    padding-left: 5px;
+    border-left: 1px solid #212121; }
 
 #main-view {
   padding-top: 80px; }

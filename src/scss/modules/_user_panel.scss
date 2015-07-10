@@ -1,0 +1,25 @@
+.user-panel {
+  margin-bottom: -2em;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
+
+  .chat-wrapper {
+    flex-grow: 4;
+    flex-shrink: 0;
+    flex-basis: 250px;
+    padding-right: 5px;
+    border-right: 1px solid $brand-black;
+  }
+
+  .recommendation-wrapper {
+    flex-grow: 4;
+    flex-shrink: 0;
+    flex-basis: 250px;
+    padding-left: 5px;
+    border-left: 1px solid $brand-black;
+  }
+}

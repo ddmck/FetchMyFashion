@@ -1,0 +1,15 @@
+<section class="row">
+  <h3>{{recommendation.title}}</h3>
+  <ol ng-repeat="recItem in recommendation.recommendation_items">
+    <li><strong>{{recItem.product.name}}</strong>  <em>{{recItem.description}}</em></li>
+  </ol>
+
+  <button ng-hide="showForm" type="button" ng-click="showForm = !showForm">Add new item</button>
+  <button ng-show="showForm" type="button" ng-click="showForm = !showForm">hide form</button>
+  <br>
+  <form class="" ng-show="showForm">
+    <input type="text" ng-model="newRecItem.productURL" placeholder="Product url">
+    <input type="text" ng-model="newRecItem.description" placeholder="Description">
+    <input type="submit" ng-click="createNew(newRecItem)">
+  </form>
+</section>

@@ -95,6 +95,12 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: "UserDetailAdminController"
     })
 
+    .state('admin.viewRecommendation', {
+      url: '/users/{userID:[0-9]+}/recommendations/{recommendationID:[0-9]+}',
+      templateUrl: assetsUrl + 'partials/recommendation-view.html',
+      controller: 'RecommendationsController'
+    })
+
     .state('admin.editUser', {
       url: '/users/{userID:[0-9]+}/editUser',
       templateUrl: assetsUrl + 'partials/edit-user.html',

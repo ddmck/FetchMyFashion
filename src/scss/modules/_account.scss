@@ -129,7 +129,7 @@
   li.tab-header-and-content {
     list-style: none;
 
-    
+
     display: inline;
   }
 
@@ -145,7 +145,7 @@
     @include media($tab-mode){
       padding: ($base-spacing / 2) $gutter;
     }
-    
+
     @include inline-block;
     border-top: 0;
 
@@ -160,7 +160,7 @@
     &.is-active {
       border-bottom: 0;
 
-      
+
       border: $tab-border;
       border-bottom-color: $tab-active-background;
       margin-bottom: -1px;
@@ -168,17 +168,16 @@
   }
 
   .tab-content {
-    display: none;
+    // display: none;
     padding: $base-spacing 0;
     width: 100%;
 
     @include media($tab-mode){
       padding: $base-spacing $gutter;
     }
-    
+
     border-top: $tab-border;
     float: left;
-    
+
   }
 }
-

@@ -101,7 +101,7 @@ app.factory('Admin', [ '$http', '$auth', '$state', '$rootScope', function($http,
       });
     },
     fetchMessages: function(customerId){
-      $http.get(backendUrl + 'api/messages.json', {async: true, params:{id: customerId}})
+      $http.get(backendUrl + 'api/messages.json', {async: true, params:{user_id: customerId}})
         .success(function(data){
           messages = data;
         });
@@ -125,9 +125,9 @@ app.factory('Recommendations', ['$http', '$state', function($http, $state){
   var recommendations = [];
   return {
     createRecommendation: function(rec){
-      $http.post(backendUrl + 'recommendations.json', {asycn: true, recommendation: rec})
+      $http.post(backendUrl + 'recommendations.json', {async: true, recommendation: rec})
         .success(function(data){
-          $state.go('admin.users');
+          $state.go('admin.viewRecommendation', {userID: data.user_id, recommendationID: data.id});
         });
     },
     fetchRecommendations: function(customerId){
