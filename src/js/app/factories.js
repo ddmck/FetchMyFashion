@@ -703,3 +703,13 @@ app.factory('authModal', function (btfModal) {
     templateUrl: assetsUrl + 'partials/auth-modal.html'
   });
 });
+
+app.factory('mySocket', function (socketFactory) {
+  var myIoSocket = io.connect('http://localhost:8080');
+
+  mySocket = socketFactory({
+    ioSocket: myIoSocket
+  });
+  mySocket.forward('admin_news');
+  return mySocket;
+});

@@ -2,7 +2,7 @@ var resolve = function(file) {
   return __dirname + '/src/js/lib/' + file + '.js';
 };
 
-module.exports = 
+module.exports =
   {
     files: [
       resolve('jquery'),
@@ -27,6 +27,8 @@ module.exports =
       resolve('angular-payments'),
       resolve('google-analytics'),
       resolve('selectize.min'),
-      resolve('selectize')
+      resolve('selectize'),
+      resolve('socketio'),
+      resolve('socket')
     ]
   }
