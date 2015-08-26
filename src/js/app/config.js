@@ -64,10 +64,16 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'AdminController',
     })
 
+    .state('admin.dataFeeds', {
+      url: '/data_feeds',
+      templateUrl: assetsUrl + 'partials/data-feeds.html',
+      controller: 'AdminDataFeedsController'
+    })
+
     .state('admin.users', {
       url: '/users',
       templateUrl: assetsUrl + 'partials/users.html',
-      controller: 'UserAdminController',
+      controller: 'UserAdminController'
     })
 
     .state('admin.userDetail', {

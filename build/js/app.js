@@ -71,10 +71,16 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider, $location
       controller: 'AdminController',
     })
 
+    .state('admin.dataFeeds', {
+      url: '/data_feeds',
+      templateUrl: assetsUrl + 'partials/data-feeds.html',
+      controller: 'AdminDataFeedsController'
+    })
+
     .state('admin.users', {
       url: '/users',
       templateUrl: assetsUrl + 'partials/users.html',
-      controller: 'UserAdminController',
+      controller: 'UserAdminController'
     })
 
     .state('admin.userDetail', {
@@ -2578,4 +2584,16 @@ app.controller('RecommendationsController', ["$scope", "$stateParams", "$http", 
     })
   }
 }]);
+
+app.controller('AdminDataFeedsController', ['$scope', '$http', function($scope, $http){
+ $scope.button = {};
+ $scope.runDataFeeds = function() {
+   console.log("run feeds");
+   $scope.button.disabled = true;
+   $http.post(backendUrl + 'api/run_feeds.json', {async: true}).success(function(data){
+    console.log(data);
+    $scope.button.hidden = true;
+   })
+ }
+}])
 
